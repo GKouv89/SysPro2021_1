@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "skiplist.h"
+#include "../include/skiplist.h"
 
 void create_skiplist(skipList **s){
   (*s) = malloc(sizeof(skipList));
@@ -26,14 +26,14 @@ void insert_skipnode(skipList *s, int id){
     idHeight++;
   }
   if(idHeight > s->height){
-    list **temp = realloc((*s)->levels, idHeight*sizeof(*((*s)->levels)));
+    list **temp = realloc(s->levels, idHeight*sizeof(*(s->levels)));
     assert(temp != NULL);
-    (*s)->levels = temp;
-    list **temp2 = realloc(startingNodes, idHeight*sizeof(*temp2));
+    s->levels = temp;
+    listNode **temp2 = realloc(startingNodes, idHeight*sizeof(*temp2));
     assert(temp2 != NULL);
     startingNodes = temp2;
     for(int i = s->height; i < idHeight; i++){
-      create_list(&((*s)->levels[i]));
+      create_list(&(s->levels[i]));
       startingNodes[i] = NULL; // these new lists are empty
       // so no boundary exists for the insertion
     }
@@ -53,16 +53,16 @@ void search_skip(skipList *s, int id, listNode ***startingNodes, int *error){
   boundaries *bounds_ret, *bounds_arg = malloc(sizeof(boundaries));
   bounds_arg->start = bounds_arg->end = NULL;
   for(int i = s->height; i >= 0; i--){
-    bounds = search(s->levels[i], id, bounds_arg->start, bounds_arg->end, error);
+    bounds_ret = search(s->levels[i], id, bounds_arg->start, bounds_arg->end, error);
     if(*error == 1){ // Element already in skiplist
       (*startingNodes)[i] = NULL;// WIP: what do we insert in startingNodes?
       return;
     }
-    (*startingNodes)[i] = bounds->start; // For insertion, for all lists except the bottom one,
+    (*startingNodes)[i] = bounds_ret->start; // For insertion, for all lists except the bottom one,
     // the startingNode will be the node right after which the new one will be inserted
     // This is also the reason for which in insertion, we only require a starting node
-    bounds_arg->start = bounds->start;
-    bounds_arg->end = bounds->end;
+    bounds_arg->start = bounds_ret->start;
+    bounds_arg->end = bounds_ret->end;
   }
 }
 

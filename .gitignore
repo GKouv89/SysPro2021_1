@@ -1,3 +1,7 @@
+# Entire Folders 
+build
+testbuild
+
 # Prerequisites
 *.d
 

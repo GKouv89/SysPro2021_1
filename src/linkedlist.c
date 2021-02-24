@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "linkedlist.h"
+#include "../include/linkedlist.h"
 
 void create_list(list ** l){
   (*l) = malloc(sizeof(list));
-  l->front = NULL;
-  l->rear = NULL;
+  (*l)->front = NULL;
+  (*l)->rear = NULL;
 }
 
 listNode* insert_node(list *l, listNode *startingNode, int id){
