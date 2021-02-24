@@ -10,16 +10,21 @@ void create_list(list ** l){
 
 listNode* insert_node(list *l, listNode *startingNode, int id){
   listNode *temp = startingNode;
+  if(startingNode != NULL){
+    printf("startingNode: %d\n", startingNode->id);
+  }
   listNode *newNode = malloc(sizeof(listNode));
   newNode->id = id;
   newNode->bottom = NULL; // THIS MUST CHANGE
   // First case: list is empty
   if(l->front == NULL && l->rear == NULL){
+    printf("INSERT 1ST CASE: %d\n", id);
     l->front = newNode;
     l->rear = newNode;
     newNode->next = newNode->prev = NULL;
   }else if(l->rear == startingNode){ // Second case: startingNode is the list's rear node
     // this means the new node will be the new rear
+    printf("INSERT 2ND CASE: %d\n", id);
     newNode->prev = l->rear;
     newNode->next = NULL;
     l->rear->next = newNode;
@@ -27,23 +32,36 @@ listNode* insert_node(list *l, listNode *startingNode, int id){
   }else if(l->front != NULL && startingNode == NULL){ 
     // Third case: startingNode is NULL, meaning the new node has a value smaller than
     // the front node's value
+    printf("INSERT 3RD CASE: %d\n", id);
     newNode->prev = NULL;
     newNode->next = l->front;
     l->front->prev  = newNode;
     l->front = newNode;
   }else{ //The node is somewhere in the middle
+    printf("INSERT 4TH CASE: %d\n", id);
     while(temp != NULL){
       if(id == temp->id){
         // Node already exists
         // In none of the other three cases is this a problem, as we can specifically check
         // The values of l->front or l->rear
+        free(newNode);
+        newNode = NULL;
         break;
-      }else if(id > temp->id && id < temp->next->id){
-        newNode->prev = temp;
-        newNode->next = temp->next;
-        temp->next->prev = newNode;
-        temp->next = newNode;
-        break;
+      }else if(id > temp->id){
+        // 2 cases
+        // temp has a next node, therefore a second constraing must be met
+        // or simply temp is greater than all list nodes
+        if(temp->next == NULL || (temp->next != NULL && id < temp->next->id)){
+          newNode->prev = temp;
+          newNode->next = temp->next;
+          if(temp->next != NULL){
+            temp->next->prev = newNode;
+          }else{
+            l->rear = newNode;
+          }
+          temp->next = newNode;
+          break;          
+        }
       }
       temp = temp->next;
     }
@@ -61,30 +79,179 @@ void print_list(list *l){
 }
 
 // void delete_node(list *, int);
+
+//////////////////////////////////////////////////////////////////////////////
+// I actually have found that changing the startingNode value               //
+// does absolutely nothing to the value read outside of the function        //
+// so I must find a way to pass a different parameter with a different way  //
+// for the correct value to be read                                         //
+//////////////////////////////////////////////////////////////////////////////
+
 boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode, int *error){
+  listNode *temp;  
+  //In all cases, we return:
+  // A pair of boundaries that will act as guidelines for search on the bottom list
+  // We also change the content of startingNode before we return
+  // which will point to the node after which the new one should be inserted 
   boundaries *new_bound = malloc(sizeof(boundaries));
   if(startingNode == NULL && endingNode == NULL){
+    printf("FIRST CASE: %d\n", id);
     // First case: list is empty (this happens at the very start of our skip list instance)
     new_bound->start = new_bound->end = NULL;
     *error = 0;
+    // startingNode would be NULL but it already is so no changes necessary
     return new_bound;
-  }
-  listNode *temp = startingNode;  
-  while(temp != endingNode){
-    if(id == temp->id){
+  }else if(startingNode == NULL && endingNode != NULL){
+    printf("SECOND CASE: %d\n", id);
+    // Second case: list is non empty and because the id is smaller than
+    // the above list's head's id, we must start from endingNode in the current list
+    // and work backwards
+    temp = endingNode;
+    while(temp != startingNode){
+      if(id == temp->id){
+        new_bound->start = new_bound->end = NULL;
+        *error = 1;
+        return new_bound;
+      }
+      if(id > temp->id){
+        *error = 0;
+        startingNode = temp;
+        new_bound->start = temp->bottom;
+        new_bound->end = temp->next->bottom;
+        if(startingNode == NULL){
+          printf("startingNode is NULL\n");
+        }else{
+          printf("startingNode->id = %d\n", startingNode->id);
+        }
+        return new_bound;
+      }    
+      temp = temp->prev;
+    }
+    // Ιf we have reached this point without a return statement
+    // the id is smaller than any in the list already
+    startingNode = NULL;
+    new_bound->start = NULL;
+    new_bound->end = l->front->bottom;
+    if(startingNode == NULL){
+      printf("startingNode is NULL\n");
+    }else{
+      printf("startingNode->id = %d\n", startingNode->id);
+    }
+    return new_bound;
+  }else if(startingNode != NULL && endingNode == NULL){
+    printf("THIRD CASE: %d\n", id);
+    // Third case: we know the id is greater than a certain node,
+    // but this node's id was the rear's id in the list above the current one
+    temp = startingNode;
+    while(temp){
+      if(id == temp->id){
+        new_bound->start = new_bound->end = NULL;
+        *error = 1;
+        return new_bound;
+      }
+      if(id < temp->id){
+        *error = 0;
+        startingNode = temp->prev;
+        if(temp->prev){
+          new_bound->start = temp->prev->bottom;
+        }else{
+          new_bound->start = NULL;
+        }
+        new_bound->end = temp->bottom;
+        if(startingNode == NULL){
+          printf("startingNode is NULL\n");
+        }else{
+          printf("startingNode->id = %d\n", startingNode->id);
+        }
+        return new_bound;
+      }   
+      temp = temp->next;
+    }
+    // Ιf we have reached this point without a return statement
+    // the id is greater than any in the list already
+    // In this case, the search must take place from the bottom of the list's rear
+    // until the rear of the list underneath the current one.
+    startingNode = l->rear;
+    new_bound->start = l->rear->bottom;
+    new_bound->end = NULL;
+    if(startingNode == NULL){
+      printf("startingNode is NULL\n");
+    }else{
+      printf("startingNode->id = %d\n", startingNode->id);
+    }
+    return new_bound;
+  }else if(startingNode == endingNode){
+    printf("FOURTH CASE: %d\n", id);
+    // Fourth case: list has only one member
+    temp = startingNode;
+    if(id < temp->id){
+      printf("CASE 4.1 \n");
+      new_bound->start = NULL;
+      new_bound->end = l->front->bottom;
+      startingNode = NULL; // this corresponds to line 27
+      *error = 0;
+    }else if(id == temp->id){
       new_bound->start = new_bound->end = NULL;
       *error = 1;
-      return new_bound;
-    }
-    if(id < temp->id){
+    }else{
+      printf("CASE 4.2\n");
       *error = 0;
-      new_bound->start = temp->prev->bottom;
-      new_bound->end = temp->bottom;
-      return new_bound;
-    }    
+      startingNode = l->rear;
+      new_bound->start = l->rear->bottom;
+      new_bound->end = NULL;
+    }
+    if(startingNode == NULL){
+      printf("startingNode is NULL\n");
+    }else{
+      printf("startingNode->id = %d\n", startingNode->id);
+    }
+    return new_bound;
+  }else{
+    printf("FIFTH CASE: %d\n", id);
+    temp = startingNode;
+    // Fifth case: multiple members, and strict bounds on both sides.
+    while(temp != endingNode->next){
+      if(id == temp->id){
+        new_bound->start = new_bound->end = NULL;
+        *error = 1;
+        return new_bound;
+      }
+      if(id < temp->id){
+        *error = 0;
+        startingNode = temp->prev;
+        if(temp->prev){
+          new_bound->start = temp->prev->bottom;
+        }else{
+          new_bound->start = NULL;
+        }
+        new_bound->end = temp->bottom;
+        if(startingNode == NULL){
+          printf("startingNode is NULL\n");
+        }else{
+          printf("startingNode->id = %d\n", startingNode->id);
+        }
+        return new_bound;
+      }    
+      temp = temp->next;
+    }
+    // If we have reached this point without any return statements,
+    // we are probably at the highest of our lists and 
+    // the number is greater than all inserted so far.
+    startingNode = l->rear;
+    new_bound->start = l->rear->bottom;
+    new_bound->end = NULL;
+    if(startingNode == NULL){
+      printf("startingNode is NULL\n");
+    }else{
+      printf("startingNode->id = %d\n", startingNode->id);
+    }
+    return new_bound;    
   }
 }
 void destroy_list(list **l){
+  if(*l == NULL){
+    return;
+  }
   listNode *temp = (*l)->front;
   listNode *to_del;
   while(temp){

@@ -13,3 +13,6 @@ testbuild/%.o: test/%.c
 
 testSkipLists: testbuild/testSkipLists.o $(SKIPL)
 	gcc -o testbuild/testSkipLists $< $(SKIPL)
+
+clean:
+	rm -f testbuild/* build/*
