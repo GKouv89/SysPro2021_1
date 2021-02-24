@@ -66,6 +66,12 @@ void search_skip(skipList *s, int id, listNode ***startingNodes, int *error){
   }
 }
 
+void print_skiplist(skipList *s){
+  for(int i = s->height - 1; i >= 0; i++){
+    print_list(s->levels[i]);
+  }
+}
+
 // void delete_skipnode(skipList *, int);
 
 

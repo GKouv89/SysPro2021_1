@@ -11,6 +11,7 @@ typedef struct skiplist{
 void create_skiplist(skipList **);
 void insert_skipnode(skipList *, int);
 void delete_skipnode(skipList *, int);
+void print_skiplist(skipList *);
 void search_skip(skipList *, int, listNode ***, int *);
 void destroy_skiplist(skipList **);
 

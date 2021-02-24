@@ -51,6 +51,15 @@ listNode* insert_node(list *l, listNode *startingNode, int id){
   return newNode;
 }
 
+void print_list(list *l){
+  listNode *temp = l->front;
+  while(temp){
+    printf("%d\t", temp->id);
+    temp = temp->next;
+  }
+  printf("\n");
+}
+
 // void delete_node(list *, int);
 boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode, int *error){
   boundaries *new_bound = malloc(sizeof(boundaries));

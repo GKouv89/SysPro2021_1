@@ -20,6 +20,7 @@ typedef struct linkedlist{
 
 void create_list(list **);
 listNode* insert_node(list *, listNode *, int);
+void print_list(list *);
 void delete_node(list *, int);
 boundaries* search(list *, int, listNode *, listNode *, int *);
 void destroy_list(list **);
