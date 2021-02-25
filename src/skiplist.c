@@ -26,7 +26,9 @@ void insert_skipnode(skipList *s, int id){
     idHeight++;
   }
   if(idHeight > s->height){
+    #ifdef DEBUG
     printf("TALLER TALLER\n");
+    #endif
     list **temp = realloc(s->levels, idHeight*sizeof(*(s->levels)));
     assert(temp != NULL);
     s->levels = temp;
@@ -44,6 +46,7 @@ void insert_skipnode(skipList *s, int id){
   // with the corresponding one in the list right above that
   listNode *currConnection;
   
+  #ifdef DEBUG
   printf("BEFORE INSERTION, STARTINGNODES\n");
   for(int i = 0; i < s->height; i++){
     if(startingNodes[i] != NULL){
@@ -52,9 +55,12 @@ void insert_skipnode(skipList *s, int id){
       printf("IN SEARCH_SKIP, startingNodes is NULL\n");
     }
   }
+  #endif
   for(int i = 0; i < s->height ;i++){
     currConnection = insert_node(s->levels[i], startingNodes[i], id);
+    #ifdef DEBUG
     printf("TEST: currConnection->id = %d\n", currConnection->id);
+    #endif
     currConnection->bottom = prevConnection;
     prevConnection = currConnection;
   }
@@ -64,19 +70,24 @@ void search_skip(skipList *s, int id, listNode *startingNodes[], int *error){
   boundaries *bounds_ret, *bounds_arg = malloc(sizeof(boundaries));
   bounds_arg->start = s->levels[s->height - 1]->front;
   bounds_arg->end = s->levels[s->height - 1]->rear;
+  listNode *futureSN;
   for(int i = s->height - 1; i >= 0; i--){
+    #ifdef DEBUG
     printf("HEIGHT: %d\n", i);
-    bounds_ret = search(s->levels[i], id, bounds_arg->start, bounds_arg->end, error);
+    #endif
+    bounds_ret = search(s->levels[i], id, bounds_arg->start, bounds_arg->end, error, &futureSN);
     if(*error == 1){ // Element already in skiplist
       startingNodes[i] = NULL;// WIP: what do we insert in startingNodes?
       return;
     }
-    startingNodes[i] = bounds_arg->start; 
+    startingNodes[i] = futureSN;
+    #ifdef DEBUG
     if(startingNodes[i] != NULL){
       printf("IN SEARCH_SKIP, startingNodes[%d]->id = %d\n", i, startingNodes[i]->id);
     }else{
-      printf("IN SEARCH_SKIP, startingNodes is NULL\n");
+      printf("IN SEARCH_SKIP, startingNodes[%d] is NULL\n", i);
     }
+    #endif
     // For insertion, for all lists except the bottom one,
     // the startingNode will be the node right after which the new one will be inserted
     // This is also the reason for which in insertion, we only require a starting node

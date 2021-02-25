@@ -1,6 +1,8 @@
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
 
+// #define DEBUG
+
 typedef struct linkedlistnode{
   int id;
   struct linkedlistnode *prev;
@@ -22,6 +24,6 @@ void create_list(list **);
 listNode* insert_node(list *, listNode *, int);
 void print_list(list *);
 void delete_node(list *, int);
-boundaries* search(list *, int, listNode *, listNode *, int *);
+boundaries* search(list *, int, listNode *, listNode *, int *, listNode **);
 void destroy_list(list **);
 #endif
