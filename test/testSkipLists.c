@@ -90,11 +90,47 @@ void test_insertion_new_data(){
   destroy_skiplist(&s);
 }
 
+void test_deletion(){
+  time_t t;
+  srand((unsigned) time(&t));
+  skipList *s;
+  create_skiplist(&s);
+  int test_ids[] = {45, 679, 999, 3, 889, 102};
+  printf("\n");
+  for(int i = 0; i < 6; i++){
+    insert_skipnode(s, test_ids[i]);
+  }
+  int order_of_removal[] = {102, 889, 45, 999, 3, 679};
+  listNode *temp;
+  for(int i = 0; i < 6; i++){
+    delete_skipnode(s, order_of_removal[i]);
+    for(int i = 0; i < s->height; i++){
+      temp = s->levels[i]->front;
+      if(temp != NULL){
+        while(temp->next){
+          TEST_ASSERT(temp->id < temp->next->id);
+          temp = temp->next;
+        }
+      }
+    }
+    #ifdef DEBUG
+    printf("SKIPLIST AFTER DELETION OF %d\n", order_of_removal[i]);
+    print_skiplist(s);
+    #endif
+  }
+  for(int i = 0; i < s->height; i++){
+    TEST_ASSERT(s->levels[i]->front == NULL);
+    TEST_ASSERT(s->levels[i]->rear == NULL);
+  }
+  destroy_skiplist(&s);
+}
+
 TEST_LIST = {
   {"creation", test_skiplist_creation},
   {"destruction", test_skiplist_destruction},
   {"insertion", test_skiplist_insertion},
   {"insertion_first", test_skiplist_first_element_insertion},
   {"insertion_random", test_insertion_new_data},
+  {"deletion", test_deletion},
   {NULL, NULL}
 };

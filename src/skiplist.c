@@ -105,7 +105,26 @@ void print_skiplist(skipList *s){
   }
 }
 
-// void delete_skipnode(skipList *, int);
+//////////////////////////////////////////////////////////////
+// In this function, we start from top to bottom            //
+// hoping to locate the node in one of the lists quickly.   //
+// Once we do, all we must do is follow the trail of bottom //
+// pointers to the lowest level, and delete in constant time//
+// in each of the remaining lists.                          //
+//////////////////////////////////////////////////////////////
+
+void delete_skipnode(skipList *s, int id){
+  int mode = 0;
+  listNode *result;
+  listNode *location = NULL;
+  for(int i = s->height - 1; i >= 0; i--){
+    result = delete_node(s->levels[i], mode, id, location);
+    if(result != NULL){
+      mode = 1;
+      location = result;
+    }
+  }
+}
 
 
 void destroy_skiplist(skipList **s){

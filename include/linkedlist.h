@@ -23,7 +23,7 @@ typedef struct linkedlist{
 void create_list(list **);
 listNode* insert_node(list *, listNode *, int);
 void print_list(list *);
-void delete_node(list *, int);
+listNode* delete_node(list *, int, int, listNode *);
 boundaries* search(list *, int, listNode *, listNode *, int *, listNode **);
 void destroy_list(list **);
 #endif

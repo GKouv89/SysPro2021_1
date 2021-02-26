@@ -88,14 +88,65 @@ void print_list(list *l){
   printf("\n");
 }
 
-// void delete_node(list *, int);
+////////////////////////////////////////////////////////////////////////////////
+// In delete we require these arguments                                       //
+// Search mode: we have not yet located the node in any of the lists so far   //
+// So we still search for it                                                  //
+// Located mode: We have located the node in one of the upper lists           //
+// and we have been following the trail of bottom pointers to the current list//
+// we know which node to delete                                               //
+// Node: NULL in the first case, a pointer to the node we have located in the //
+// second                                                                     //
+// id: the same in both cases, but in located we ignore it                    //  
+////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////
-// I actually have found that changing the startingNode value               //
-// does absolutely nothing to the value read outside of the function        //
-// so I must find a way to pass a different parameter with a different way  //
-// for the correct value to be read                                         //
-//////////////////////////////////////////////////////////////////////////////
+listNode* delete_node(list *l, int mode, int id, listNode *located){
+  listNode *temp;
+  listNode *to_ret, *to_del;
+  int found = 0;
+  if(mode == 0){ // Searching for the node
+    temp = l->front;
+    while(temp){
+      if(temp->id == id){ // Node was just located
+        found = 1;
+        to_ret = temp->bottom;
+        to_del = temp;
+        break;
+      }
+      temp = temp->next;
+    }
+    // If we have reached this point and not found the node
+    // the node is probably in a lower level, but not here
+    // so we return null
+    if(found == 0){
+      to_ret = NULL;
+      return to_ret;
+    }
+  }else{ // Node located
+    to_del = located;
+    to_ret = to_del->bottom;
+  }
+  if(to_del == l->front && to_del == l->rear){
+    // First case: the list will be empty after this
+    l->front = l->rear = NULL;
+  }else if(to_del == l->front && l->front != l->rear){
+    // Second case: we must change only l->front
+    to_del->next->prev = NULL;
+    l->front = to_del->next;
+  }else if(to_del == l->rear && l->front != l->rear){
+    // Third case: we must change only l->rear
+    to_del->prev->next = NULL;
+    l->rear = to_del->prev;
+  }else{
+    // Fourth case: node is somewhere in the middle
+    to_del->prev->next = to_del->next;
+    to_del->next->prev = to_del->prev;
+  }
+  to_del->bottom = to_del->prev = to_del->next = NULL;
+  free(to_del);
+  to_del = temp = NULL;
+  return to_ret;
+}
 
 boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode, int *error, listNode **futureSN){
   listNode *temp;  
