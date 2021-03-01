@@ -1,11 +1,14 @@
 #include <stdio.h>
+#include <math.h>
 #include <stdlib.h>
 #include <assert.h>
 #include "../include/skiplist.h"
 
-void create_skiplist(skipList **s){
+void create_skiplist(skipList **s, int exp_data_count){
   (*s) = malloc(sizeof(skipList));
   (*s)->height = 1; 
+  // (*s)->max_height = log10(exp_data_count)/log10(2);
+  (*s)->max_height = log2(exp_data_count);
   (*s)->levels = malloc(sizeof(*((*s)->levels)));
   create_list(&((*s)->levels[0]));
 }
@@ -22,7 +25,7 @@ void insert_skipnode(skipList *s, int id, char *vacDate, Citizen *c){
     return;
   }
   int idHeight = 1;
-  while(rand() % 2 == 1){
+  while(rand() % 1000 < 1000*p && idHeight < s->max_height){
     idHeight++;
   }
   if(idHeight > s->height){
@@ -57,7 +60,11 @@ void insert_skipnode(skipList *s, int id, char *vacDate, Citizen *c){
   }
   #endif
   for(int i = 0; i < s->height ;i++){
-    currConnection = insert_node(s->levels[i], startingNodes[i], id, vacDate, c);
+    if(i == 0){
+      currConnection = insert_node(s->levels[i], startingNodes[i], id, vacDate, c);
+    }else{
+      currConnection = insert_node(s->levels[i], startingNodes[i], id, NULL, NULL);
+    }
     #ifdef DEBUG
     printf("TEST: currConnection->id = %d\n", currConnection->id);
     #endif
@@ -100,6 +107,48 @@ void search_skip(skipList *s, int id, listNode *startingNodes[], int *error){
   }
   free(bounds_arg);
   free(bounds_ret);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Search is used to locate where a node will be placed after insertion in a list    //
+// Lookup on the other hand is used to locate whether a node is in the skiplist and, //
+// if so, info on that citizen's vaccination state                                   //
+///////////////////////////////////////////////////////////////////////////////////////
+
+void* lookup_skiplist(skipList *s, int id, int lookupMode){
+  boundaries *bounds_ret = malloc(sizeof(boundaries));
+  boundaries *bounds_arg = malloc(sizeof(boundaries));
+  bounds_arg->start = s->levels[s->height - 1]->front;
+  bounds_arg->end = s->levels[s->height - 1]->rear;
+  listNode *futureSN;
+  int *found;
+  *found = 0;
+  for(int i = s->height - 1; i >= 0; i--){
+    search(s->levels[i], id, bounds_arg->start, bounds_arg->end, &bounds_ret, found, &futureSN);
+    // futureSN is ignored here
+    if(*found == 1){ // Element already in skiplist
+      break;
+    }
+    bounds_arg->start = bounds_ret->start;
+    bounds_arg->end = bounds_ret->end;
+  }
+  listNode *infoNode;
+  if(*found){
+    infoNode->start = cascade(bounds_arg->start);
+    free(bounds_arg);
+    free(bounds_ret);
+    switch(lookupMode){
+      case 0: return infoNode->vaccinationDate;
+      case 1: return infoNode->citizen;
+      case 2: return infoNode->citizen->country;
+      default: fprintf(stderr, "INVALID LOOKUPMODE IN LOOKUP_SKIPLIST\n");
+        break;
+    }
+  }else{
+    free(bounds_arg);
+    free(bounds_ret);
+    return NULL;
+  }
 }
 
 void print_skiplist(skipList *s){

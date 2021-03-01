@@ -6,8 +6,9 @@
 
 typedef struct linkedlistnode{
   int id;
-  char *vaccinationDate; // NULL if we are in the not-vaccinated-for skiplist of a virus
-  Citizen *citizen;
+  char *vaccinationDate; // NULL if we are in the not-vaccinated-for skiplist of a virus or
+  // on any list in the skiplist that is not the base one
+  Citizen *citizen; // NULL if we are in any list in the skiplist that is not the base one
   struct linkedlistnode *prev;
   struct linkedlistnode *next;
   struct linkedlistnode *bottom;
@@ -28,5 +29,6 @@ listNode* insert_node(list *, listNode *, int, char *, Citizen *);
 void print_list(list *);
 listNode* delete_node(list *, int, int, listNode *);
 void search(list *, int, listNode *, listNode *, boundaries **, int *, listNode **);
+listNode* cascade(listNode *);
 void destroy_list(list **);
 #endif

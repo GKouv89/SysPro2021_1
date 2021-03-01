@@ -5,7 +5,7 @@
 
 void test_skiplist_creation(){
   skipList *s;
-  create_skiplist(&s);
+  create_skiplist(&s, 100); // say that we expected 100 elements to be read
   TEST_ASSERT(s->levels[0] != NULL);
   TEST_ASSERT(s->levels[0]->front == NULL);
   TEST_ASSERT(s->levels[0]->rear == NULL);
@@ -13,7 +13,7 @@ void test_skiplist_creation(){
 
 void test_skiplist_destruction(){
   skipList *s;
-  create_skiplist(&s);
+  create_skiplist(&s, 100);
   destroy_skiplist(&s);
   TEST_ASSERT(s == NULL);
   // Here, we are more concerned with whether valgrind
@@ -24,7 +24,7 @@ void test_skiplist_first_element_insertion(){
   time_t t;
   srand((unsigned) time(&t));
   skipList *s;
-  create_skiplist(&s);
+  create_skiplist(&s, 1);
   int test_id = 45;
   printf("\n");
   insert_skipnode(s, test_id, NULL, NULL);
@@ -37,7 +37,7 @@ void test_skiplist_insertion(){
   time_t t;
   srand((unsigned) time(&t));
   skipList *s;
-  create_skiplist(&s);
+  create_skiplist(&s, 6);
   int test_ids[] = {45, 679, 999, 3, 889, 102};
   printf("\n");
   for(int i = 0; i < 6; i++){
@@ -65,11 +65,11 @@ void test_insertion_new_data(){
   time_t t;
   srand((unsigned) time(&t));
   skipList *s;
-  create_skiplist(&s);
-  int test_ids[] = {507179, 27064, 780498, 136779, 371680, 537193, 193847/*, 169022, 194, 15451, 19729,
-                    19904, 96398, 68318, 9094, 8200, 37871, 8990, 1618, 197, 21792, 1632*/};
+  create_skiplist(&s, 22);
+  int test_ids[] = {507179, 27064, 780498, 136779, 371680, 537193, 193847, 169022, 194, 15451, 19729,
+                    19904, 96398, 68318, 9094, 8200, 37871, 8990, 1618, 197, 21792, 1632};
   printf("\n");
-  for(int i = 0; i < 7; i++){
+  for(int i = 0; i < 22; i++){
     #ifdef DEBUG
     printf("inserting %d\n", test_ids[i]);
     #endif
@@ -94,7 +94,7 @@ void test_deletion(){
   time_t t;
   srand((unsigned) time(&t));
   skipList *s;
-  create_skiplist(&s);
+  create_skiplist(&s, 6);
   int test_ids[] = {45, 679, 999, 3, 889, 102};
   printf("\n");
   for(int i = 0; i < 6; i++){

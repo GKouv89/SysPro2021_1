@@ -1,6 +1,7 @@
 FLAGS = -g -c
 SKIPL = build/linkedlist.o build/skiplist.o
 BF = build/bloomfilter.o
+LINK = -lm
 # OBJ = 
 
 all: testBloomFilter
@@ -15,7 +16,7 @@ testbuild/%.o: test/%.c
 	gcc $(FLAGS) $< -o $@
 
 testSkipLists: testbuild/testSkipLists.o $(SKIPL)
-	gcc -o testbuild/testSkipLists $< $(SKIPL)
+	gcc -o testbuild/testSkipLists $< $(SKIPL) $(LINK)
 
 testBloomFilter: testbuild/testBloomFilter.o $(BF)
 	gcc -o testbuild/testBloomFilter $< $(BF) -DK=2

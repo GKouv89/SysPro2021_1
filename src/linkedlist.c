@@ -187,7 +187,11 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
     temp = endingNode;
     while(temp != startingNode){
       if(id == temp->id){
-        (*new_bound)->start = (*new_bound)->end = NULL;
+        (*new_bound)->start = (*new_bound)->end = temp;
+        // new_bound takes temp in both cases so that search can be used in
+        // skiplist's lookup functions
+        // if we are looking to insert a node and there is a duplicate, we ignore
+        // new_bound, but if we are seeking for a node's information, this is necessary
         *error = 1;
         return;
       }
@@ -229,7 +233,7 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
     temp = startingNode;
     while(temp){
       if(id == temp->id){
-        (*new_bound)->start = (*new_bound)->end = NULL;
+        (*new_bound)->start = (*new_bound)->end = temp;
         *error = 1;
         return;
       }
@@ -283,7 +287,7 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
       *futureSN = NULL; // this corresponds to line 27
       *error = 0;
     }else if(id == temp->id){
-      (*new_bound)->start = (*new_bound)->end = NULL;
+      (*new_bound)->start = (*new_bound)->end = temp;
       *futureSN = NULL;
       *error = 1;
     }else{
@@ -311,7 +315,7 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
     // Fifth case: multiple members, and strict bounds on both sides.
     while(temp != endingNode->next){
       if(id == temp->id){
-        (*new_bound)->start = (*new_bound)->end = NULL;
+        (*new_bound)->start = (*new_bound)->end = temp;
         *error = 1;
         return;
       }
@@ -351,6 +355,25 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
     return;    
   }
 }
+
+///////////////////////////////////////////
+// Used to follow the path from a higher //
+// level node to the corresponding one   //
+// in the bottom list.                   // 
+// This way, if a node whose info we're  //
+// looking for is in one of the higher   //
+// lists, then we don't have to call     //
+// search function in every list again.  //
+///////////////////////////////////////////
+
+listNode* cascade(listNode *l){
+  listNode *temp = l;
+  while(temp->bottom){
+    temp = temp->bottom
+  }
+  return temp;
+}
+
 void destroy_list(list **l){
   if(*l == NULL){
     return;
