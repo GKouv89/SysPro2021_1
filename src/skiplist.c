@@ -63,11 +63,14 @@ void insert_skipnode(skipList *s, int id, char *vacDate, Citizen *c){
     #endif
     currConnection->bottom = prevConnection;
     prevConnection = currConnection;
+    startingNodes[i] = NULL;
   }
+  free(startingNodes);
 }
 
 void search_skip(skipList *s, int id, listNode *startingNodes[], int *error){
-  boundaries *bounds_ret, *bounds_arg = malloc(sizeof(boundaries));
+  boundaries *bounds_ret = malloc(sizeof(boundaries));
+  boundaries *bounds_arg = malloc(sizeof(boundaries));
   bounds_arg->start = s->levels[s->height - 1]->front;
   bounds_arg->end = s->levels[s->height - 1]->rear;
   listNode *futureSN;
@@ -75,7 +78,7 @@ void search_skip(skipList *s, int id, listNode *startingNodes[], int *error){
     #ifdef DEBUG
     printf("HEIGHT: %d\n", i);
     #endif
-    bounds_ret = search(s->levels[i], id, bounds_arg->start, bounds_arg->end, error, &futureSN);
+    search(s->levels[i], id, bounds_arg->start, bounds_arg->end, &bounds_ret, error, &futureSN);
     if(*error == 1){ // Element already in skiplist
       startingNodes[i] = NULL;// WIP: what do we insert in startingNodes?
       return;
@@ -96,6 +99,7 @@ void search_skip(skipList *s, int id, listNode *startingNodes[], int *error){
     bounds_arg->end = bounds_ret->end;
   }
   free(bounds_arg);
+  free(bounds_ret);
 }
 
 void print_skiplist(skipList *s){

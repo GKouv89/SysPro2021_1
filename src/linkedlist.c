@@ -161,23 +161,22 @@ listNode* delete_node(list *l, int mode, int id, listNode *located){
   return to_ret;
 }
 
-boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode, int *error, listNode **futureSN){
+void search(list *l, int id, listNode *startingNode, listNode *endingNode, boundaries **new_bound, int *error, listNode **futureSN){
   listNode *temp;  
   //In all cases, we return:
   // A pair of boundaries that will act as guidelines for search on the bottom list
   // We also change the content of startingNode before we return
   // which will point to the node after which the new one should be inserted 
-  boundaries *new_bound = malloc(sizeof(boundaries));
   if(startingNode == NULL && endingNode == NULL){
     #ifdef DEBUG
     printf("FIRST CASE: %d\n", id);
     #endif
     // First case: list is empty (this happens at the very start of our skip list instance)
-    new_bound->start = new_bound->end = NULL;
+    (*new_bound)->start = (*new_bound)->end = NULL;
     *error = 0;
     // startingNode would be NULL but it already is so no changes necessary
     *futureSN = NULL;
-    return new_bound;
+    return;
   }else if(startingNode == NULL && endingNode != NULL){
     #ifdef DEBUG
     printf("SECOND CASE: %d\n", id);
@@ -188,15 +187,15 @@ boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode
     temp = endingNode;
     while(temp != startingNode){
       if(id == temp->id){
-        new_bound->start = new_bound->end = NULL;
+        (*new_bound)->start = (*new_bound)->end = NULL;
         *error = 1;
-        return new_bound;
+        return;
       }
       if(id > temp->id){
         *error = 0;
         *futureSN = temp;
-        new_bound->start = temp->bottom;
-        new_bound->end = temp->next->bottom;
+        (*new_bound)->start = temp->bottom;
+        (*new_bound)->end = temp->next->bottom;
         #ifdef DEBUG
         if(*futureSN == NULL){
           printf("futureSN is NULL\n");
@@ -204,15 +203,15 @@ boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode
           printf("futureSN->id = %d\n", (*futureSN)->id);
         }
         #endif
-        return new_bound;
+        return;
       }    
       temp = temp->prev;
     }
     // Ιf we have reached this point without a return statement
     // the id is smaller than any in the list already
     *futureSN = NULL;
-    new_bound->start = NULL;
-    new_bound->end = l->front->bottom;
+    (*new_bound)->start = NULL;
+    (*new_bound)->end = l->front->bottom;
     #ifdef DEBUG
     if(*futureSN == NULL){
       printf("futureSN is NULL\n");
@@ -220,7 +219,7 @@ boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode
       printf("futureSN->id = %d\n", (*futureSN)->id);
     }
     #endif
-    return new_bound;
+    return;
   }else if(startingNode != NULL && endingNode == NULL){
     #ifdef DEBUG
     printf("THIRD CASE: %d\n", id);
@@ -230,19 +229,19 @@ boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode
     temp = startingNode;
     while(temp){
       if(id == temp->id){
-        new_bound->start = new_bound->end = NULL;
+        (*new_bound)->start = (*new_bound)->end = NULL;
         *error = 1;
-        return new_bound;
+        return;
       }
       if(id < temp->id){
         *error = 0;
         *futureSN = temp->prev;
         if(temp->prev){
-          new_bound->start = temp->prev->bottom;
+          (*new_bound)->start = temp->prev->bottom;
         }else{
-          new_bound->start = NULL;
+          (*new_bound)->start = NULL;
         }
-        new_bound->end = temp->bottom;
+        (*new_bound)->end = temp->bottom;
         #ifdef DEBUG
         if(*futureSN == NULL){
           printf("futureSN is NULL\n");
@@ -250,7 +249,7 @@ boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode
           printf("futureSN->id = %d\n", (*futureSN)->id);
         }
         #endif
-        return new_bound;
+        return;
       }   
       temp = temp->next;
     }
@@ -259,8 +258,8 @@ boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode
     // In this case, the search must take place from the bottom of the list's rear
     // until the rear of the list underneath the current one.
     *futureSN = l->rear;
-    new_bound->start = l->rear->bottom;
-    new_bound->end = NULL;
+    (*new_bound)->start = l->rear->bottom;
+    (*new_bound)->end = NULL;
     #ifdef DEBUG
     if(*futureSN == NULL){
       printf("*futureSN is NULL\n");
@@ -268,7 +267,7 @@ boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode
       printf("*futureSN->id = %d\n", (*futureSN)->id);
     }
     #endif
-    return new_bound;
+    return;
   }else if(startingNode == endingNode){
     #ifdef DEBUG
     printf("FOURTH CASE: %d\n", id);
@@ -279,12 +278,12 @@ boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode
       #ifdef DEBUG
       printf("CASE 4.1 \n");
       #endif
-      new_bound->start = NULL;
-      new_bound->end = l->front->bottom;
+      (*new_bound)->start = NULL;
+      (*new_bound)->end = l->front->bottom;
       *futureSN = NULL; // this corresponds to line 27
       *error = 0;
     }else if(id == temp->id){
-      new_bound->start = new_bound->end = NULL;
+      (*new_bound)->start = (*new_bound)->end = NULL;
       *futureSN = NULL;
       *error = 1;
     }else{
@@ -293,8 +292,8 @@ boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode
       #endif
       *error = 0;
       *futureSN = l->rear;
-      new_bound->start = l->rear->bottom;
-      new_bound->end = NULL;
+      (*new_bound)->start = l->rear->bottom;
+      (*new_bound)->end = NULL;
     }
     #ifdef DEBUG
     if(*futureSN == NULL){
@@ -303,7 +302,7 @@ boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode
       printf("*futureSN->id = %d\n", (*futureSN)->id);
     }
     #endif
-    return new_bound;
+    return;
   }else{
     #ifdef DEBUG
     printf("FIFTH CASE: %d\n", id);
@@ -312,19 +311,19 @@ boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode
     // Fifth case: multiple members, and strict bounds on both sides.
     while(temp != endingNode->next){
       if(id == temp->id){
-        new_bound->start = new_bound->end = NULL;
+        (*new_bound)->start = (*new_bound)->end = NULL;
         *error = 1;
-        return new_bound;
+        return;
       }
       if(id < temp->id){
         *error = 0;
         *futureSN = temp->prev;
         if(temp->prev){
-          new_bound->start = temp->prev->bottom;
+          (*new_bound)->start = temp->prev->bottom;
         }else{
-          new_bound->start = NULL;
+          (*new_bound)->start = NULL;
         }
-        new_bound->end = temp->bottom;
+        (*new_bound)->end = temp->bottom;
         #ifdef DEBUG
         if(*futureSN == NULL){
           printf("*futureSN is NULL\n");
@@ -332,7 +331,7 @@ boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode
           printf("*futureSN->id = %d\n", (*futureSN)->id);
         }
         #endif
-        return new_bound;
+        return;
       }    
       temp = temp->next;
     }
@@ -340,8 +339,8 @@ boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode
     // we are probably at the highest of our lists and 
     // the number is greater than all inserted so far.
     *futureSN = l->rear;
-    new_bound->start = l->rear->bottom;
-    new_bound->end = NULL;
+    (*new_bound)->start = l->rear->bottom;
+    (*new_bound)->end = NULL;
     #ifdef DEBUG
     if(*futureSN == NULL){
       printf("*futureSN is NULL\n");
@@ -349,7 +348,7 @@ boundaries* search(list *l, int id, listNode *startingNode, listNode *endingNode
       printf("*futureSN->id = %d\n", (*futureSN)->id);
     }
     #endif
-    return new_bound;    
+    return;    
   }
 }
 void destroy_list(list **l){

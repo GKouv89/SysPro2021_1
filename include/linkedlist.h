@@ -27,6 +27,6 @@ void create_list(list **);
 listNode* insert_node(list *, listNode *, int, char *, Citizen *);
 void print_list(list *);
 listNode* delete_node(list *, int, int, listNode *);
-boundaries* search(list *, int, listNode *, listNode *, int *, listNode **);
+void search(list *, int, listNode *, listNode *, boundaries **, int *, listNode **);
 void destroy_list(list **);
 #endif
