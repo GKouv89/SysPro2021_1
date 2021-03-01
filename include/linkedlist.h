@@ -2,9 +2,12 @@
 #define LINKEDLIST_H
 
 // #define DEBUG
+#include "citizen.h"
 
 typedef struct linkedlistnode{
   int id;
+  char *vaccinationDate; // NULL if we are in the not-vaccinated-for skiplist of a virus
+  Citizen *citizen;
   struct linkedlistnode *prev;
   struct linkedlistnode *next;
   struct linkedlistnode *bottom;
@@ -21,7 +24,7 @@ typedef struct linkedlist{
 } list;
 
 void create_list(list **);
-listNode* insert_node(list *, listNode *, int);
+listNode* insert_node(list *, listNode *, int, char *, Citizen *);
 void print_list(list *);
 listNode* delete_node(list *, int, int, listNode *);
 boundaries* search(list *, int, listNode *, listNode *, int *, listNode **);

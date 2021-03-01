@@ -9,7 +9,7 @@ typedef struct skiplist{
 } skipList;
 
 void create_skiplist(skipList **);
-void insert_skipnode(skipList *, int);
+void insert_skipnode(skipList *, int, char *, Citizen *);
 void delete_skipnode(skipList *, int);
 void print_skiplist(skipList *);
 void search_skip(skipList *, int, listNode *[], int *);

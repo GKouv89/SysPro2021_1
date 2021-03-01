@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "../include/linkedlist.h"
 
 void create_list(list ** l){
@@ -8,7 +9,7 @@ void create_list(list ** l){
   (*l)->rear = NULL;
 }
 
-listNode* insert_node(list *l, listNode *startingNode, int id){
+listNode* insert_node(list *l, listNode *startingNode, int id, char *vacDate, Citizen *c){
   listNode *temp = startingNode;
   #ifdef DEBUG
   if(startingNode != NULL){
@@ -17,6 +18,13 @@ listNode* insert_node(list *l, listNode *startingNode, int id){
   #endif
   listNode *newNode = malloc(sizeof(listNode));
   newNode->id = id;
+  if(vacDate != NULL){
+    newNode->vaccinationDate = malloc((strlen(vacDate) + 1)*sizeof(char));
+    strcpy(newNode->vaccinationDate, vacDate);
+  }else{
+    newNode->vaccinationDate = NULL;
+  }
+  newNode->citizen = c;
   newNode->bottom = NULL; // THIS MUST CHANGE
   // First case: list is empty
   if(l->front == NULL && l->rear == NULL){
@@ -143,6 +151,11 @@ listNode* delete_node(list *l, int mode, int id, listNode *located){
     to_del->next->prev = to_del->prev;
   }
   to_del->bottom = to_del->prev = to_del->next = NULL;
+  to_del->citizen = NULL;
+  if(to_del->vaccinationDate != NULL){
+    free(to_del->vaccinationDate);
+    to_del->vaccinationDate = NULL;
+  }
   free(to_del);
   to_del = temp = NULL;
   return to_ret;

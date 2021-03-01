@@ -27,7 +27,7 @@ void test_skiplist_first_element_insertion(){
   create_skiplist(&s);
   int test_id = 45;
   printf("\n");
-  insert_skipnode(s, test_id);
+  insert_skipnode(s, test_id, NULL, NULL);
   print_skiplist(s);
   // also more interested on potential errors from valgrind
   destroy_skiplist(&s);
@@ -44,7 +44,7 @@ void test_skiplist_insertion(){
     #ifdef DEBUG
     printf("inserting %d\n", test_ids[i]);
     #endif
-    insert_skipnode(s, test_ids[i]);
+    insert_skipnode(s, test_ids[i], NULL, NULL);
     #ifdef DEBUG
     print_skiplist(s);
     #endif
@@ -73,7 +73,7 @@ void test_insertion_new_data(){
     #ifdef DEBUG
     printf("inserting %d\n", test_ids[i]);
     #endif
-    insert_skipnode(s, test_ids[i]);
+    insert_skipnode(s, test_ids[i], NULL, NULL);
     #ifdef DEBUG
     print_skiplist(s);
     #endif
@@ -98,7 +98,7 @@ void test_deletion(){
   int test_ids[] = {45, 679, 999, 3, 889, 102};
   printf("\n");
   for(int i = 0; i < 6; i++){
-    insert_skipnode(s, test_ids[i]);
+    insert_skipnode(s, test_ids[i], NULL, NULL);
   }
   int order_of_removal[] = {102, 889, 45, 999, 3, 679};
   listNode *temp;

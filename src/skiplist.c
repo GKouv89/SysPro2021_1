@@ -10,7 +10,7 @@ void create_skiplist(skipList **s){
   create_list(&((*s)->levels[0]));
 }
 
-void insert_skipnode(skipList *s, int id){
+void insert_skipnode(skipList *s, int id, char *vacDate, Citizen *c){
   listNode **startingNodes = malloc(s->height*sizeof(listNode *));
   // we will have all the nodes where we went a level lower
   // therefore the boundaries for the insertion into that height's list
@@ -57,7 +57,7 @@ void insert_skipnode(skipList *s, int id){
   }
   #endif
   for(int i = 0; i < s->height ;i++){
-    currConnection = insert_node(s->levels[i], startingNodes[i], id);
+    currConnection = insert_node(s->levels[i], startingNodes[i], id, vacDate, c);
     #ifdef DEBUG
     printf("TEST: currConnection->id = %d\n", currConnection->id);
     #endif
