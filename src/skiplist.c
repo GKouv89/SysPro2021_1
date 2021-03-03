@@ -115,7 +115,7 @@ void search_skip(skipList *s, int id, listNode *startingNodes[], int *error){
 // if so, info on that citizen's vaccination state                                   //
 ///////////////////////////////////////////////////////////////////////////////////////
 
-void* lookup_skiplist(skipList *s, int id, int lookupMode){
+char* lookup_skiplist_vaccinationDate(skipList *s, int id){
   boundaries *bounds_ret = malloc(sizeof(boundaries));
   boundaries *bounds_arg = malloc(sizeof(boundaries));
   bounds_arg->start = s->levels[s->height - 1]->front;
@@ -134,16 +134,10 @@ void* lookup_skiplist(skipList *s, int id, int lookupMode){
   }
   listNode *infoNode;
   if(*found){
-    infoNode->start = cascade(bounds_arg->start);
+    infoNode = cascade(bounds_arg->start);
     free(bounds_arg);
     free(bounds_ret);
-    switch(lookupMode){
-      case 0: return infoNode->vaccinationDate;
-      case 1: return infoNode->citizen;
-      case 2: return infoNode->citizen->country;
-      default: fprintf(stderr, "INVALID LOOKUPMODE IN LOOKUP_SKIPLIST\n");
-        break;
-    }
+    return infoNode->vaccinationDate;
   }else{
     free(bounds_arg);
     free(bounds_ret);

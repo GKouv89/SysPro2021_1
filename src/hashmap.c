@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../include/hashmap.h"
+#include "../include/bloomfilter.h"
 
 void create_map(hashMap **map, int noOfBuckets, typeOfList type){
   (*map) = malloc(sizeof(hashMap));
@@ -17,19 +18,19 @@ unsigned long hash_function(hashMap *map, unsigned char *str){
   return hash % map->noOfBuckets;
 }
 
-void insert(hashMap *map, unsigned char *key, void *content){
+void insert(hashMap *map, unsigned char *key, int *error, void *content){
   unsigned long hash = hash_function(map, key);
-  insert_bucketNode(map->map[hash], content);
+  insert_bucketNode(map->map[hash]->bl, error, content);
 }
 
 void* find_node(hashMap *map, unsigned char *key){
   unsigned long hash = hash_function(map, key);
-  search_bucketList(map->map[hash], key);
+  search_bucketList(map->map[hash]->bl, key);
 }
 
 void destroy_map(hashMap **map){
   for(int i = 0; i < (*map)->noOfBuckets; i++){
-    destroy_bucketList(&((*map)->map[i]->bl), (*map)->type);
+    destroy_bucketList(&((*map)->map[i]->bl));
     free((*map)->map[i]);
     (*map)->map[i] = NULL;
   }

@@ -16,7 +16,7 @@ void insert_skipnode(skipList *, int, char *, Citizen *);
 void delete_skipnode(skipList *, int);
 void print_skiplist(skipList *);
 void search_skip(skipList *, int, listNode *[], int *);
-void* lookup_skiplist(skipList *, int, int);
+char* lookup_skiplist_vaccinationDate(skipList *s, int);
 void destroy_skiplist(skipList **);
 
 #endif

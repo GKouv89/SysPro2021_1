@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "../include/citizen.h"
 
@@ -31,7 +33,7 @@ void destroy_citizen(Citizen **cit){
   (*cit)->firstName = NULL;
   free((*cit)->lastName);
   (*cit)->lastName = NULL;
-  (*cit)->Country = NULL;
+  (*cit)->country = NULL;
   free(*cit);
   *cit = NULL;
 }

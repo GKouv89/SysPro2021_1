@@ -8,6 +8,7 @@ typedef struct bf{
   unsigned char *filter;
 } bloomFilter;
 
+unsigned long djb2(unsigned char *);
 unsigned long hash_i(unsigned char *, unsigned int);
 void create_bloomFilter(bloomFilter **, int, int);
 void insert_in_bloomFilter(bloomFilter *, unsigned char *);

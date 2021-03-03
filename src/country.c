@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "../include/country.h"
 
@@ -6,7 +8,9 @@ Country* create_country(const char *name){
   Country *c = malloc(sizeof(Country));
   c->name = malloc((strlen(name) + 1)*sizeof(char));
   strcpy(c->name, name);
-  c->popByAgeGroup = {0, 0, 0, 0};
+  for(int i = 0; i < 4; i++){
+    c->popByAgeGroup[i] = 0;
+  }
   return c;
 }
 

@@ -369,7 +369,7 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
 listNode* cascade(listNode *l){
   listNode *temp = l;
   while(temp->bottom){
-    temp = temp->bottom
+    temp = temp->bottom;
   }
   return temp;
 }

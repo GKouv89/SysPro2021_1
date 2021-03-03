@@ -11,7 +11,7 @@ typedef struct virus{
   bloomFilter *virusBF;
 } Virus;
 
-Virus* create_virus(const char *);
+Virus* create_virus(const char *, int, int, int);
 int isEqual_virus(Virus *, unsigned char *);
 void destroy_virus(Virus **);
 

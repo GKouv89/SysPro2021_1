@@ -28,10 +28,10 @@
 
 Τροποποιήσεις:
   Skiplist:
-    [] Προσθήκη επιπλεόν πληροφορίας, πιθανόν μέσω ενός struct value
+    [X] Προσθήκη επιπλεόν πληροφορίας, πιθανόν μέσω ενός struct value
     που θα είναι ο δείκτης στην εγγραφή, και η ημερομηνία ενός εμβολιασμού
     (αυτή είναι κενή συμβολοσειρά αν είμαστε στην non_vaccinated skiplist ενός ιού)
-    [] Άρα η συνάρτηση search στο linkedlist.c και search_skip στο skiplist.c πρέπει να έχουν ένα ακόμα arguement.
+    [X] Άρα η συνάρτηση search στο linkedlist.c και search_skip στο skiplist.c πρέπει να έχουν ένα ακόμα arguement.
     [] Αφού γίνει αυτή η προσθήκη, πρόσθεσε τις κατάλληλες lookup_virus_skiplist για τα non_vaccinated και vaccinated_for
     lists του κάθε ιού στο entities.c 
 

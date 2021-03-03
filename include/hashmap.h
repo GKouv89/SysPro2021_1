@@ -14,7 +14,7 @@ typedef struct map{
 
 void create_map(hashMap **, int, typeOfList);
 unsigned long hash_function(hashMap*, unsigned char*);
-void insert(hashMap*, void *);
+void insert(hashMap*, unsigned char*, int *, void *);
 void* find_node(hashMap*, unsigned char*);
 void destroy_map(hashMap**);
 // void print_bucket_no_of_entries(hashMap*);

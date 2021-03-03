@@ -4,18 +4,18 @@
 
 #include "../include/virus.h"
 
-Virus* create_virus(const char *name){
+Virus* create_virus(const char *name, int skiplist_max, int bloomfilter_max, int hf_count){
   Virus *v = malloc(sizeof(Virus));
   v->name = malloc((strlen(name) + 1)*sizeof(char));
   strcpy(v->name, name);
-  create_skiplist(&(v->vaccinated_for));
-  create_skiplist(&(v->not_vaccinated_for));
-  create_bloomFilter(&(v->virusBF));
+  create_skiplist(&(v->vaccinated_for), skiplist_max);
+  create_skiplist(&(v->not_vaccinated_for), skiplist_max);
+  create_bloomFilter(&(v->virusBF), bloomfilter_max, hf_count);
   return v;
 }
 
 int lookup_in_virus_bloomFilter(Virus *v, unsigned char *str){
-  lookup_in_bloomFilter(v->virusBf, str);
+  lookup_in_bloomFilter(v->virusBF, str);
 }
 
 int isEqual_virus(Virus *v, unsigned char *str){

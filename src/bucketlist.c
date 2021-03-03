@@ -2,7 +2,9 @@
 #include <stdlib.h>
 
 #include "../include/bucketlist.h"
-#include "../include/entities.h"
+#include "../include/country.h"
+#include "../include/citizen.h"
+#include "../include/virus.h"
 
 void create_bucketList(bucketList **bl, typeOfList type){
   (*bl) = malloc(sizeof(bucketList));
@@ -10,7 +12,20 @@ void create_bucketList(bucketList **bl, typeOfList type){
   (*bl)->type = type;
 }
 
-void insert_bucketNode(bucketList *bl, void *content){
+void insert_bucketNode(bucketList *bl, int *error, void *content){
+  void *search_res;
+  if(bl->type == Citizen_List){
+    search_res = search_bucketList(bl, ((Citizen *)content)->id);
+  }else if(bl->type == Country_List){
+    search_res = search_bucketList(bl, ((Country *)content)->name);    
+  }else{
+    search_res = search_bucketList(bl, ((Virus *)content)->name);
+  }
+  if(search_res != NULL){
+    *error = 1;
+    return;
+  }
+  *error = 0;
   bucketNode *new_node = malloc(sizeof(bucketNode));
   new_node->content = content;
   new_node->next = NULL;
@@ -26,15 +41,15 @@ void insert_bucketNode(bucketList *bl, void *content){
 void* search_bucketList(bucketList *bl, char *str){
   bucketNode *temp = bl->front;
   while(temp){
-    if(bl->type == Country){
+    if(bl->type == Country_List){
       if(isEqual_country(temp->content, str)){
         return temp->content;
       }
-    }else if(bl->type == Virus){
+    }else if(bl->type == Virus_List){
       if(isEqual_virus(temp->content, str)){
         return temp->content;
       }
-    }else if(bl->type == Citizen){
+    }else if(bl->type == Citizen_List){
       if(isEqual_citizen(temp->content, str)){
         return temp->content;
       }
@@ -50,12 +65,15 @@ void destroy_bucketList(bucketList **bl){
   while(temp){
     to_del = temp;
     temp = temp->next;
-    if((*bl)->type == Country){
-      destroy_country(&(to_del->content));
-    }else if((*bl)->type == Virus){
-      destroy_virus(&(to_del->content));
-    }else if((*bl)->type == Citizen){
-      destroy_citizen(&(to_del->content));
+    if((*bl)->type == Country_List){
+      Country *to_destroy = (Country *)to_del->content;
+      destroy_country(&to_destroy);
+    }else if((*bl)->type == Virus_List){
+      Virus *to_destroy = (Virus *)to_del->content;
+      destroy_virus(&to_destroy);
+    }else if((*bl)->type == Citizen_List){
+      Citizen *to_destroy = (Citizen *)to_del->content;
+      destroy_citizen(&to_destroy);
     }
     free(to_del);
     to_del = NULL;

@@ -1,7 +1,7 @@
 #ifndef BUCKETLIST_H
 #define BUCKETLIST_H
 
-typedef enum typeOfList{Country, Virus, Citizen};
+typedef enum tol{Country_List, Virus_List, Citizen_List} typeOfList;
 
 typedef struct bucketlistnode{
   void *content;
@@ -10,12 +10,12 @@ typedef struct bucketlistnode{
 
 typedef struct bucketlist{
   typeOfList type;
-  blNode *front;
-  blNode *rear;
+  bucketNode *front;
+  bucketNode *rear;
 } bucketList;
 
 void create_bucketList(bucketList **, typeOfList);
-void insert_bucketNode(bucketList *, void *);
+void insert_bucketNode(bucketList *, int *, void *);
 void print_bucketList(bucketList *);
 void* search_bucketList(bucketList *, char *);
 void destroy_bucketList(bucketList **);
