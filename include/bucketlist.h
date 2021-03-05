@@ -15,7 +15,7 @@ typedef struct bucketlist{
 } bucketList;
 
 void create_bucketList(bucketList **, typeOfList);
-void insert_bucketNode(bucketList *, int *, void *);
+void insert_bucketNode(bucketList *, void *);
 void print_bucketList(bucketList *);
 void* search_bucketList(bucketList *, char *);
 void destroy_bucketList(bucketList **);

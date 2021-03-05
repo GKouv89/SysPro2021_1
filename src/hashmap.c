@@ -18,9 +18,9 @@ unsigned long hash_function(hashMap *map, unsigned char *str){
   return hash % map->noOfBuckets;
 }
 
-void insert(hashMap *map, unsigned char *key, int *error, void *content){
+void insert(hashMap *map, unsigned char *key, void *content){
   unsigned long hash = hash_function(map, key);
-  insert_bucketNode(map->map[hash]->bl, error, content);
+  insert_bucketNode(map->map[hash]->bl, content);
 }
 
 void* find_node(hashMap *map, unsigned char *key){

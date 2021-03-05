@@ -62,6 +62,9 @@ listNode* insert_node(list *l, listNode *startingNode, int id, char *vacDate, Ci
         // Node already exists
         // In none of the other three cases is this a problem, as we can specifically check
         // The values of l->front or l->rear
+        if(newNode->vaccinationDate != NULL){
+          free(newNode->vaccinationDate);
+        }
         free(newNode);
         newNode = NULL;
         break;
@@ -161,8 +164,8 @@ listNode* delete_node(list *l, int mode, int id, listNode *located){
   return to_ret;
 }
 
-void search(list *l, int id, listNode *startingNode, listNode *endingNode, boundaries **new_bound, int *error, listNode **futureSN){
-  listNode *temp;  
+char* search(list *l, int id, listNode *startingNode, listNode *endingNode, boundaries **new_bound, int *error, listNode **futureSN){
+  listNode *temp, *temp_bottom;  
   //In all cases, we return:
   // A pair of boundaries that will act as guidelines for search on the bottom list
   // We also change the content of startingNode before we return
@@ -176,7 +179,7 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
     *error = 0;
     // startingNode would be NULL but it already is so no changes necessary
     *futureSN = NULL;
-    return;
+    return NULL;
   }else if(startingNode == NULL && endingNode != NULL){
     #ifdef DEBUG
     printf("SECOND CASE: %d\n", id);
@@ -193,7 +196,15 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
         // if we are looking to insert a node and there is a duplicate, we ignore
         // new_bound, but if we are seeking for a node's information, this is necessary
         *error = 1;
-        return;
+        temp_bottom = temp->bottom;
+        if(temp_bottom == NULL){
+          return temp->vaccinationDate;
+        }else{
+          while(temp_bottom->bottom){
+            temp_bottom = temp_bottom->bottom;
+          }
+          return temp_bottom->vaccinationDate;        
+        }
       }
       if(id > temp->id){
         *error = 0;
@@ -207,7 +218,7 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
           printf("futureSN->id = %d\n", (*futureSN)->id);
         }
         #endif
-        return;
+        return NULL;
       }    
       temp = temp->prev;
     }
@@ -216,6 +227,7 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
     *futureSN = NULL;
     (*new_bound)->start = NULL;
     (*new_bound)->end = l->front->bottom;
+    *error = 0;
     #ifdef DEBUG
     if(*futureSN == NULL){
       printf("futureSN is NULL\n");
@@ -223,7 +235,7 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
       printf("futureSN->id = %d\n", (*futureSN)->id);
     }
     #endif
-    return;
+    return NULL;
   }else if(startingNode != NULL && endingNode == NULL){
     #ifdef DEBUG
     printf("THIRD CASE: %d\n", id);
@@ -235,7 +247,15 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
       if(id == temp->id){
         (*new_bound)->start = (*new_bound)->end = temp;
         *error = 1;
-        return;
+        temp_bottom = temp->bottom;
+        if(temp_bottom == NULL){
+          return temp->vaccinationDate;
+        }else{
+          while(temp_bottom->bottom){
+            temp_bottom = temp_bottom->bottom;
+          }
+          return temp_bottom->vaccinationDate;        
+        }
       }
       if(id < temp->id){
         *error = 0;
@@ -253,7 +273,7 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
           printf("futureSN->id = %d\n", (*futureSN)->id);
         }
         #endif
-        return;
+        return NULL;
       }   
       temp = temp->next;
     }
@@ -264,6 +284,7 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
     *futureSN = l->rear;
     (*new_bound)->start = l->rear->bottom;
     (*new_bound)->end = NULL;
+    *error = 0;
     #ifdef DEBUG
     if(*futureSN == NULL){
       printf("*futureSN is NULL\n");
@@ -271,7 +292,7 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
       printf("*futureSN->id = %d\n", (*futureSN)->id);
     }
     #endif
-    return;
+    return NULL;
   }else if(startingNode == endingNode){
     #ifdef DEBUG
     printf("FOURTH CASE: %d\n", id);
@@ -290,6 +311,15 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
       (*new_bound)->start = (*new_bound)->end = temp;
       *futureSN = NULL;
       *error = 1;
+      temp_bottom = temp->bottom;
+      if(temp_bottom == NULL){
+        return temp->vaccinationDate;
+      }else{
+        while(temp_bottom->bottom){
+          temp_bottom = temp_bottom->bottom;
+        }
+        return temp_bottom->vaccinationDate;        
+      }
     }else{
       #ifdef DEBUG
       printf("CASE 4.2\n");
@@ -306,7 +336,7 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
       printf("*futureSN->id = %d\n", (*futureSN)->id);
     }
     #endif
-    return;
+    return NULL;
   }else{
     #ifdef DEBUG
     printf("FIFTH CASE: %d\n", id);
@@ -317,7 +347,15 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
       if(id == temp->id){
         (*new_bound)->start = (*new_bound)->end = temp;
         *error = 1;
-        return;
+        temp_bottom = temp->bottom;
+        if(temp_bottom == NULL){
+          return temp->vaccinationDate;
+        }else{
+          while(temp_bottom->bottom){
+            temp_bottom = temp_bottom->bottom;
+          }
+          return temp_bottom->vaccinationDate;        
+        }
       }
       if(id < temp->id){
         *error = 0;
@@ -335,13 +373,14 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
           printf("*futureSN->id = %d\n", (*futureSN)->id);
         }
         #endif
-        return;
+        return NULL;
       }    
       temp = temp->next;
     }
     // If we have reached this point without any return statements,
     // we are probably at the highest of our lists and 
     // the number is greater than all inserted so far.
+    *error = 0;
     *futureSN = l->rear;
     (*new_bound)->start = l->rear->bottom;
     (*new_bound)->end = NULL;
@@ -352,7 +391,7 @@ void search(list *l, int id, listNode *startingNode, listNode *endingNode, bound
       printf("*futureSN->id = %d\n", (*futureSN)->id);
     }
     #endif
-    return;    
+    return NULL;    
   }
 }
 
@@ -384,6 +423,9 @@ void destroy_list(list **l){
     to_del = temp;
     temp = temp->next;
     to_del->prev = to_del->next = to_del->bottom = NULL;
+    if(to_del->vaccinationDate != NULL){
+      free(to_del->vaccinationDate);
+    }
     free(to_del);
   }
   to_del = NULL;

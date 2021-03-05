@@ -12,11 +12,11 @@ typedef struct skiplist{
 } skipList;
 
 void create_skiplist(skipList **, int);
-void insert_skipnode(skipList *, int, char *, Citizen *);
+char* insert_skipnode(skipList *, int, char *, Citizen *);
 void delete_skipnode(skipList *, int);
 void print_skiplist(skipList *);
-void search_skip(skipList *, int, listNode *[], int *);
-char* lookup_skiplist_vaccinationDate(skipList *s, int);
+char* search_skip(skipList *, int, listNode *[], int *);
+listNode* lookup_skiplist(skipList *s, int);
 void destroy_skiplist(skipList **);
 
 #endif

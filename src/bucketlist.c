@@ -12,20 +12,7 @@ void create_bucketList(bucketList **bl, typeOfList type){
   (*bl)->type = type;
 }
 
-void insert_bucketNode(bucketList *bl, int *error, void *content){
-  void *search_res;
-  if(bl->type == Citizen_List){
-    search_res = search_bucketList(bl, ((Citizen *)content)->id);
-  }else if(bl->type == Country_List){
-    search_res = search_bucketList(bl, ((Country *)content)->name);    
-  }else{
-    search_res = search_bucketList(bl, ((Virus *)content)->name);
-  }
-  if(search_res != NULL){
-    *error = 1;
-    return;
-  }
-  *error = 0;
+void insert_bucketNode(bucketList *bl, void *content){
   bucketNode *new_node = malloc(sizeof(bucketNode));
   new_node->content = content;
   new_node->next = NULL;

@@ -13,16 +13,17 @@ void create_skiplist(skipList **s, int exp_data_count){
   create_list(&((*s)->levels[0]));
 }
 
-void insert_skipnode(skipList *s, int id, char *vacDate, Citizen *c){
+char* insert_skipnode(skipList *s, int id, char *vacDate, Citizen *c){
   listNode **startingNodes = malloc(s->height*sizeof(listNode *));
   // we will have all the nodes where we went a level lower
   // therefore the boundaries for the insertion into that height's list
   // if the new node will reach that height
   int error = 0;
-  search_skip(s, id, startingNodes, &error);
+  char *dupeVaccinationDate = search_skip(s, id, startingNodes, &error);
   if(error == 1){
     // ID already exists in skip list
-    return;
+    free(startingNodes);
+    return dupeVaccinationDate;
   }
   int idHeight = 1;
   while(rand() % 1000 < 1000*p && idHeight < s->max_height){
@@ -73,22 +74,26 @@ void insert_skipnode(skipList *s, int id, char *vacDate, Citizen *c){
     startingNodes[i] = NULL;
   }
   free(startingNodes);
+  return NULL;
 }
 
-void search_skip(skipList *s, int id, listNode *startingNodes[], int *error){
+char* search_skip(skipList *s, int id, listNode *startingNodes[], int *error){
   boundaries *bounds_ret = malloc(sizeof(boundaries));
   boundaries *bounds_arg = malloc(sizeof(boundaries));
   bounds_arg->start = s->levels[s->height - 1]->front;
   bounds_arg->end = s->levels[s->height - 1]->rear;
   listNode *futureSN;
+  char *dupeVaccinationDate;
   for(int i = s->height - 1; i >= 0; i--){
     #ifdef DEBUG
     printf("HEIGHT: %d\n", i);
     #endif
-    search(s->levels[i], id, bounds_arg->start, bounds_arg->end, &bounds_ret, error, &futureSN);
+    dupeVaccinationDate = search(s->levels[i], id, bounds_arg->start, bounds_arg->end, &bounds_ret, error, &futureSN);
     if(*error == 1){ // Element already in skiplist
       startingNodes[i] = NULL;// WIP: what do we insert in startingNodes?
-      return;
+      free(bounds_ret);
+      free(bounds_arg);
+      return dupeVaccinationDate;
     }
     startingNodes[i] = futureSN;
     #ifdef DEBUG
@@ -107,6 +112,7 @@ void search_skip(skipList *s, int id, listNode *startingNodes[], int *error){
   }
   free(bounds_arg);
   free(bounds_ret);
+  return NULL;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -115,7 +121,7 @@ void search_skip(skipList *s, int id, listNode *startingNodes[], int *error){
 // if so, info on that citizen's vaccination state                                   //
 ///////////////////////////////////////////////////////////////////////////////////////
 
-char* lookup_skiplist_vaccinationDate(skipList *s, int id){
+listNode* lookup_skiplist(skipList *s, int id){
   boundaries *bounds_ret = malloc(sizeof(boundaries));
   boundaries *bounds_arg = malloc(sizeof(boundaries));
   bounds_arg->start = s->levels[s->height - 1]->front;
@@ -137,7 +143,7 @@ char* lookup_skiplist_vaccinationDate(skipList *s, int id){
     infoNode = cascade(bounds_arg->start);
     free(bounds_arg);
     free(bounds_ret);
-    return infoNode->vaccinationDate;
+    return infoNode;
   }else{
     free(bounds_arg);
     free(bounds_ret);

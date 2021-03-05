@@ -14,8 +14,28 @@ Virus* create_virus(const char *name, int skiplist_max, int bloomfilter_max, int
   return v;
 }
 
+void insert_in_virus_bloomFilter(Virus *v, unsigned char *str){
+  insert_in_bloomFilter(v->virusBF, str);
+}
+
+char* insert_in_vaccinated_for_list(Virus *v, int citizenID, char *date, Citizen *citizen){
+  return insert_skipnode(v->vaccinated_for, citizenID, date, citizen);
+}
+
+void insert_in_not_vaccinated_for_list(Virus *v, int citizenID, Citizen *citizen){
+  insert_skipnode(v->not_vaccinated_for, citizenID, NULL, citizen);
+}
+
 int lookup_in_virus_bloomFilter(Virus *v, unsigned char *str){
-  lookup_in_bloomFilter(v->virusBF, str);
+  return lookup_in_bloomFilter(v->virusBF, str);
+}
+
+listNode *lookup_in_virus_not_vaccinated_for_list(Virus *v, int citizenID){
+  return lookup_in_skiplist(v->not_vaccinated_for, citizenID);
+}
+
+listNode *lookup_in_virus_vaccinated_for_list(Virus *v, int citizenID){
+  return lookup_in_skiplist(v->vaccinated_for, citizenID);
 }
 
 int isEqual_virus(Virus *v, unsigned char *str){
