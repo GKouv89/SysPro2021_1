@@ -116,13 +116,27 @@ void test_dupe_rejection(){
         insert(virus_map, virus_name, virus);        
       }
       if(strcmp(vacStatus, "NO") == 0){
+        // Making sure there hasn't been a record read that lists the citizen
+        // as vaccinated already.
+        // If the bloom filter returns 0, there *definitely* hasn't been such a record.
+        // If it returns 1, we make sure it isn't a false positive by searching for 
+        // the node in the 'vaccinated for' the virus skiplist
         if(!lookup_in_virus_bloomFilter(virus, id)){
           insert_in_not_vaccinated_for_list(virus, atoi(id), citizen);
-        }else if(!lookup_in_virus_vaccinated_for_list(virus, id)){
+        }else if(!lookup_in_virus_vaccinated_for_list(virus, atoi(id))){
           insert_in_not_vaccinated_for_list(virus, atoi(id), citizen);
         }
       }else{
-        if(lookup_in_virus_vaccinated_for_list(virus, id)){
+        if(lookup_in_virus_not_vaccinated_for_list(virus, atoi(id))){
+          // Ignoring duplicate case where first record for same citizen and virus
+          // mentions that the citizen is not vaccinated for the virus
+          // and second record says citizen is vaccinated.
+          continue;
+        }
+        if(lookup_in_virus_vaccinated_for_list(virus, atoi(id))){
+          // Ignoring duplicate case where both records for same citizen and virus
+          // mention that the citizen is vaccinated for the virus but the records
+          // have different vaccination dates
           continue;
         }
         insert_in_virus_bloomFilter(virus, id);
@@ -134,7 +148,16 @@ void test_dupe_rejection(){
       }
     }
     ///////////////////////
-    
+  }
+  ////////////////////////////////////////////////////////
+  // Here, the assertion will take place through prints //
+  ////////////////////////////////////////////////////////
+  for(int i = 0; i < virus_map->noOfBuckets; i++){
+    bucketNode *temp = virus_map->map[i]->bl->front;
+    while(temp){
+      print_virus_skiplists((Virus *) temp->content);
+      temp = temp->next;
+    }
   }
   TEST_ASSERT(fclose(fp) == 0);
   free(line);

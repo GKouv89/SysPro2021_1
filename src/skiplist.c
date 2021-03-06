@@ -127,19 +127,18 @@ listNode* lookup_skiplist(skipList *s, int id){
   bounds_arg->start = s->levels[s->height - 1]->front;
   bounds_arg->end = s->levels[s->height - 1]->rear;
   listNode *futureSN;
-  int *found;
-  *found = 0;
+  int found = 0;
   for(int i = s->height - 1; i >= 0; i--){
-    search(s->levels[i], id, bounds_arg->start, bounds_arg->end, &bounds_ret, found, &futureSN);
+    search(s->levels[i], id, bounds_arg->start, bounds_arg->end, &bounds_ret, &found, &futureSN);
     // futureSN is ignored here
-    if(*found == 1){ // Element already in skiplist
+    if(found == 1){ // Element already in skiplist
       break;
     }
     bounds_arg->start = bounds_ret->start;
     bounds_arg->end = bounds_ret->end;
   }
   listNode *infoNode;
-  if(*found){
+  if(found){
     infoNode = cascade(bounds_arg->start);
     free(bounds_arg);
     free(bounds_ret);
