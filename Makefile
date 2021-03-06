@@ -5,13 +5,15 @@ LINK = -lm
 FILE_PARSING = build/hashmap.o build/bucketlist.o build/citizen.o build/country.o build/virus.o
 # OBJ = 
 
-all: testFileParsing
+all: vaccineMonitor
+
+tests: testSkipLists testBloomFilter testFileParsing
 
 build/%.o: src/%.c
 	gcc $(FLAGS) $< -o $@
 
-# vaccineMonitor: vaccineMonitor.o $(OBJ)
-# 	gcc $@ -o vaccineMonitor.o $(OBJ)
+vaccineMonitor: build/vaccineMonitor.o
+	gcc -o build/$@ $^
 
 testbuild/%.o: test/%.c
 	gcc $(FLAGS) $< -o $@
