@@ -71,5 +71,6 @@ int main(int argc, char *argv[]){
   destroy_map(&virus_map);
   destroy_map(&country_map);
   assert(fclose(recordsFile) == 0);
+  free(fileName);
   return 0;
 }
