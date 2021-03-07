@@ -8,6 +8,7 @@
 #include "../include/virus.h"
 #include "../include/country.h"
 #include "../include/citizen.h"
+#include "../include/commands.h"
 
 int main(int argc, char *argv[]){
   if(argc != 5){
@@ -55,22 +56,55 @@ int main(int argc, char *argv[]){
   create_map(&citizen_map, 101, Citizen_List);
   
   inputFileParsing(country_map, citizen_map, virus_map, recordsFile, bloomFiltersSize);
+  /// MAIN MENU ///
+  size_t command_length = 1024, chars_read;
+  char *command = malloc(command_length*sizeof(char)), *rest;
+  char *comm_name, *citizenID, *virusName;
+  citizenID = malloc(5*sizeof(char));
+  virusName = malloc(13*sizeof(char));
+  while(1){
+    chars_read = getline(&command, &command_length, stdin);
+    comm_name = strtok_r(command, " ", &rest);
+    if(strcmp(comm_name, "/vaccineStatusBloom") == 0){
+      if(2 != sscanf(rest, "%s %s", citizenID, virusName)){
+        printf("Bad arguments to /vaccineStatusBloom. Try again.\n");
+      }else{
+        vaccineStatusBloom(virus_map, citizenID, virusName);
+      }
+    }else if(strcmp(comm_name, "/vaccineStatus") == 0){
+      if(2 == sscanf(rest, "%s %s", citizenID, virusName)){
+        vaccineStatus(virus_map, citizenID, virusName);
+      }else if(1 == sscanf(rest, "%s", citizenID)){
+        vaccineStatusAll(virus_map, citizenID);
+      }else{
+        printf("Bad arguments to /vaccineStatus. Try again.\n");
+      }
+    }else if(strcmp(comm_name, "/exit\n") == 0){
+      break;
+    }else{
+      printf("Unknown command %s. Try again.\n", comm_name);
+    }
+  }
+  
   
   ////////////////////////////////////////////////////////
   // Here, the assertion will take place through prints //
   ////////////////////////////////////////////////////////
-  for(int i = 0; i < virus_map->noOfBuckets; i++){
-    bucketNode *temp = virus_map->map[i]->bl->front;
-    while(temp){
-      print_virus_skiplists((Virus *) temp->content);
-      temp = temp->next;
-    }
-  }
+  // for(int i = 0; i < virus_map->noOfBuckets; i++){
+    // bucketNode *temp = virus_map->map[i]->bl->front;
+    // while(temp){
+      // print_virus_skiplists((Virus *) temp->content);
+      // temp = temp->next;
+    // }
+  // }
   
   destroy_map(&citizen_map);
   destroy_map(&virus_map);
   destroy_map(&country_map);
   assert(fclose(recordsFile) == 0);
   free(fileName);
+  free(command);
+  free(citizenID);
+  free(virusName);
   return 0;
 }

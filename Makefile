@@ -3,7 +3,7 @@ SKIPL = build/linkedlist.o build/skiplist.o
 BF = build/bloomfilter.o
 LINK = -lm
 FILE_PARSING = build/hashmap.o build/bucketlist.o build/citizen.o build/country.o build/virus.o
-OBJ = build/inputParsing.o $(FILE_PARSING) $(SKIPL) $(BF)
+OBJ = build/inputParsing.o build/commands.o $(FILE_PARSING) $(SKIPL) $(BF)
 
 all: vaccineMonitor
 

@@ -28,6 +28,12 @@ void* find_node(hashMap *map, unsigned char *key){
   search_bucketList(map->map[hash]->bl, key);
 }
 
+void lookup_vacStatus_all(hashMap *map, unsigned char *citizenID){
+  for(int i = 0; i < map->noOfBuckets; i++){
+    vacStatus_all(map->map[i]->bl, citizenID);
+  }
+}
+
 void destroy_map(hashMap **map){
   for(int i = 0; i < (*map)->noOfBuckets; i++){
     destroy_bucketList(&((*map)->map[i]->bl));

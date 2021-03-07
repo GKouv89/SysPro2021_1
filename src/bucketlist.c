@@ -46,6 +46,22 @@ void* search_bucketList(bucketList *bl, char *str){
   return NULL;
 }
 
+void vacStatus_all(bucketList *bl, unsigned char *citizenID){
+  if(bl->type == Virus_List){
+    bucketNode *temp = bl->front;
+    listNode *res;
+    while(temp){
+      res = lookup_in_virus_vaccinated_for_list((Virus *)temp->content, atoi(citizenID));
+      if(res == NULL){
+        printf("%s NO\n", ((Virus *)temp->content)->name);
+      }else{
+        printf("%s YES %s\n", ((Virus *)temp->content)->name, res->vaccinationDate);
+      }
+      temp = temp->next;
+    }
+  }
+}
+
 void destroy_bucketList(bucketList **bl){
   bucketNode *temp = (*bl)->front;
   bucketNode *to_del;

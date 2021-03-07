@@ -18,6 +18,7 @@ void create_bucketList(bucketList **, typeOfList);
 void insert_bucketNode(bucketList *, void *);
 void print_bucketList(bucketList *);
 void* search_bucketList(bucketList *, char *);
+void vacStatus_all(bucketList *, unsigned char *);
 void destroy_bucketList(bucketList **);
 
 #endif
