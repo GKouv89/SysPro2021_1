@@ -90,6 +90,7 @@ void insertCitizenRecord(hashMap *viruses, hashMap *countries, hashMap *citizens
       printf("ERROR: CITIZEN ALREADY VACCINATED ON %s\n", temp->vaccinationDate);
       return;
     }
+    insert_in_virus_bloomFilter(temp_virus, citizenID);
     insert_in_vaccinated_for_list(temp_virus, atoi(citizenID), dateToken, temp_citizen);
   }
 }
