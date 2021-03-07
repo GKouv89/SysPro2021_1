@@ -26,6 +26,10 @@ void insert_in_not_vaccinated_for_list(Virus *v, int citizenID, Citizen *citizen
   insert_skipnode(v->not_vaccinated_for, citizenID, NULL, citizen);
 }
 
+void remove_from_not_vaccinated_for_list(Virus *v, int citizenID){
+  delete_skipnode(v->not_vaccinated_for, citizenID);
+}  
+
 int lookup_in_virus_bloomFilter(Virus *v, unsigned char *str){
   return lookup_in_bloomFilter(v->virusBF, str);
 }

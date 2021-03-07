@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <time.h>
 
 #include "../include/inputparsing.h"
 #include "../include/hashmap.h"
@@ -11,6 +12,7 @@
 #include "../include/commands.h"
 
 int main(int argc, char *argv[]){
+  srand(time(NULL));
   if(argc != 5){
     printf("Flags:\n");
     printf("-c file_name: records will be read from the file named file_name.\n");
@@ -55,13 +57,45 @@ int main(int argc, char *argv[]){
   create_map(&virus_map, 3, Virus_List);
   create_map(&citizen_map, 101, Citizen_List);
   
+  // Calculating current date, just in case it is necessary for vaccinateNow //
+  time_t t = time(NULL);
+  struct tm currDate;
+  char *date = malloc(11*sizeof(char));
+  char *day, *month, *year;
+  day = malloc(3*sizeof(char));
+  month = malloc(3*sizeof(char));
+  year = malloc(5*sizeof(char));
+  currDate = *localtime(&t);
+  if(currDate.tm_mday < 10){
+    sprintf(day, "0%d", currDate.tm_mday);
+  }else{
+    sprintf(day, "%d", currDate.tm_mday);
+  }
+  if(currDate.tm_mon + 1 < 10){
+    sprintf(month, "0%d", currDate.tm_mon + 1);
+  }else{
+    sprintf(month, "%d", currDate.tm_mon + 1);
+  }
+  sprintf(year, "%d", currDate.tm_year + 1900);
+  sprintf(date, "%s-%s-%s", day, month, year);
+  ////////////////////////////////////////////////////////////////////////////////
+  
   inputFileParsing(country_map, citizen_map, virus_map, recordsFile, bloomFiltersSize);
   /// MAIN MENU ///
   size_t command_length = 1024, chars_read;
   char *command = malloc(command_length*sizeof(char)), *rest;
-  char *comm_name, *citizenID, *virusName;
+  char *comm_name, *citizenID, *virusName, *firstName, *lastName, *country, *vacStatus, *vacDate, *token;
+  int age;
   citizenID = malloc(5*sizeof(char));
   virusName = malloc(13*sizeof(char));
+  firstName = malloc(13*sizeof(char));
+  lastName = malloc(13*sizeof(char));
+  country = malloc(30*sizeof(char));
+  vacStatus = malloc(4*sizeof(char));
+  vacDate = malloc(11*sizeof(char));
+  Country *temp_country;
+  Citizen *temp_citizen;
+  Virus *temp_virus;
   while(1){
     chars_read = getline(&command, &command_length, stdin);
     comm_name = strtok_r(command, " ", &rest);
@@ -79,6 +113,31 @@ int main(int argc, char *argv[]){
       }else{
         printf("Bad arguments to /vaccineStatus. Try again.\n");
       }
+    }else if(strcmp(comm_name, "/vaccinateNow") == 0){
+      if(sscanf(rest, "%s %s %s %s %d %s", citizenID, firstName, lastName, country, &age, virusName) == 6){
+        // Before calling vaccinateNow, we must first see if the citizen, country and virus exist in
+        // the hashtables
+        temp_country = (Country *) find_node(country_map, country);
+        if(temp_country == NULL){
+          temp_country = create_country(country);
+          insert(country_map, country, temp_country);        
+        }
+        temp_citizen = (Citizen *) find_node(citizen_map, citizenID);
+        if(temp_citizen == NULL){
+          temp_citizen = create_citizen(citizenID, firstName, lastName, age, temp_country);
+          insert(citizen_map, citizenID, temp_citizen);        
+        }
+        temp_virus = (Virus *) find_node(virus_map, virusName);
+        if(temp_virus == NULL){
+          temp_virus = create_virus(virusName, 100, bloomFiltersSize, 16);
+          insert(virus_map, virusName, temp_virus);        
+        }
+        vaccinateNow(temp_virus, citizenID, date, temp_citizen);
+      }else{
+        printf("Bad arguments to /vaccinateNow. Try again.\n");
+      }
+    }else if(strcmp(comm_name, "/insertCitizenRecord") == 0){
+      insertCitizenRecord(virus_map, country_map, citizen_map, bloomFiltersSize, rest);
     }else if(strcmp(comm_name, "/exit\n") == 0){
       break;
     }else{
@@ -106,5 +165,14 @@ int main(int argc, char *argv[]){
   free(command);
   free(citizenID);
   free(virusName);
+  free(firstName);
+  free(lastName);
+  free(country);
+  free(vacStatus);
+  free(vacDate);
+  free(date);
+  free(day);
+  free(month);
+  free(year);
   return 0;
 }

@@ -15,6 +15,7 @@ Virus* create_virus(const char *, int, int, int);
 void insert_in_virus_bloomFilter(Virus *, unsigned char *);
 char* insert_in_vaccinated_for_list(Virus *, int, char *, Citizen *);
 void insert_in_not_vaccinated_for_list(Virus *, int, Citizen *);
+void remove_from_not_vaccinated_for_list(Virus *, int);
 listNode *lookup_in_virus_not_vaccinated_for_list(Virus *, int);
 listNode *lookup_in_virus_vaccinated_for_list(Virus *, int);
 int lookup_in_virus_bloomFilter(Virus *, unsigned char *);
