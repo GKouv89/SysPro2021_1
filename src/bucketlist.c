@@ -23,6 +23,9 @@ void insert_bucketNode(bucketList *bl, void *content){
     bl->rear->next = new_node;
     bl->rear = new_node;
   }
+  if(bl->type == Citizen_List){
+    update_population((Country *) ((Citizen *)content)->country, ((Citizen *)content)->age);
+  }
 }
 
 void* search_bucketList(bucketList *bl, char *str){
