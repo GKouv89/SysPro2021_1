@@ -9,6 +9,8 @@ typedef struct country{
 Country* create_country(const char *);
 void update_population(Country *, int);
 int isEqual_country(Country *, unsigned char *);
+void print_vaccination_ratios_byAge(Country *, int[]);
+void print_vaccination_ratio(Country *, int[]);
 void destroy_country(Country **);
 
 

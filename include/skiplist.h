@@ -18,6 +18,7 @@ void print_skiplist(skipList *);
 void print_skiplist_citizens(skipList *);
 char* search_skip(skipList *, int, listNode *[], int *);
 listNode* lookup_skiplist(skipList *s, int);
+void print_skiplist_population_of_country(skipList *, int, Country *, char*, char *);
 void destroy_skiplist(skipList **);
 
 #endif

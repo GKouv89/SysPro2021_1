@@ -1,6 +1,7 @@
 # Entire Folders 
 build
 testbuild
+testing.txt 
 
 # Prerequisites
 *.d

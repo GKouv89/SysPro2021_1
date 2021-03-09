@@ -34,6 +34,45 @@ int isEqual_country(Country *c, unsigned char *str){
   }
 }
 
+void print_vaccination_ratios_byAge(Country *c, int vaccinated[]){
+  printf("%s\n", c->name);
+  if(c->popByAgeGroup[0] == 0){
+    printf("0-20 0 0\n");
+  }else{
+    printf("0-20 %d %.2lf\n", vaccinated[0], ((double)vaccinated[0]/(double)c->popByAgeGroup[0])*100);
+  }
+  if(c->popByAgeGroup[1] == 0){
+    printf("21-40 0 0\n");
+  }else{
+    printf("21-40 %d %.2lf\n", vaccinated[1], ((double)vaccinated[1]/(double)c->popByAgeGroup[1])*100);
+  }
+  if(c->popByAgeGroup[2] == 0){
+    printf("41-60 0 0\n");
+  }else{
+    printf("41-60 %d %.2lf\n", vaccinated[2], ((double)vaccinated[2]/(double)c->popByAgeGroup[2])*100);
+  }
+  if(c->popByAgeGroup[3] == 0){
+    printf("60+ 0 0\n");
+  }else{
+    printf("60+ %d %.2lf\n", vaccinated[3], ((double)vaccinated[3]/(double)c->popByAgeGroup[3])*100);
+  }
+}
+
+void print_vaccination_ratio(Country *c, int vaccinated[]){
+  printf("%s ", c->name);
+  int overallPopulation = 0;
+  int overallVaccinated = 0;
+  for(int i = 0; i < 4; i++){
+    overallVaccinated += vaccinated[i];
+    overallPopulation += c->popByAgeGroup[i];
+  }
+  if(overallPopulation == 0 && overallVaccinated == 0){
+    printf("0 0\n");
+  }else{
+    printf("%d %d\n", overallPopulation, overallVaccinated);
+  }
+}
+
 void destroy_country(Country **c){
   free((*c)->name);
   (*c)->name = NULL;

@@ -11,8 +11,7 @@
 #include "../include/country.h"
 #include "../include/citizen.h"
 #include "../include/commands.h"
-
-int dateValidity(char *);
+#include "../include/dateOps.h"
 
 int main(int argc, char *argv[]){
   srand(time(NULL));
@@ -98,7 +97,7 @@ int main(int argc, char *argv[]){
   vacDate = malloc(11*sizeof(char));
   char *date1, *date2;
   date1 = malloc(11*sizeof(char));
-  date2 = malloc(11*sizeof(char));
+  date2 = malloc(12*sizeof(char));
   Country *temp_country;
   Citizen *temp_citizen;
   Virus *temp_virus;
@@ -154,11 +153,14 @@ int main(int argc, char *argv[]){
       // First, checking for argument count.
       if(sscanf(rest, "%s %s %s %s", country, virusName, date1, date2) == 4){
         // checking for date validity
+        dateValidity(date1, date2);
       }else if(sscanf(rest, "%s %s %s", virusName, date1, date2) == 3){
         // checking for date validity
+        dateValidity(date1, date2);
       }else{
         printf("Bad arguments to /popStatusByAge. Try again.\n");
       }
+      popStatusByAge(virus_map, country_map, country, virusName, date1, date2);
     }else if(strcmp(comm_name, "/exit\n") == 0){
       break;
     }else{
@@ -194,27 +196,11 @@ int main(int argc, char *argv[]){
   free(country);
   free(vacStatus);
   free(vacDate);
+  free(date1);
+  free(date2);
   free(date);
   free(day);
   free(month);
   free(year);
   return 0;
-}
-
-int dateValidity(char *date){
-  if(strlen(date) != 10){
-    // invalid length
-    return -1;
-  }
-  if(date[2] != '-' || date[5] != '-'){
-    // both of these characters must be dashes, as they
-    // separate day from month and month from year
-    return -1;
-  }
-  char *rest;
-  char *day = strtok_r(date, "-", &rest);
-  char *month = strtok_r(NULL, "-", &rest);
-  char *year = strtok_r(NULL, "", &rest);
-  // Making sure that no end of line character is at the end of the string
-  // which should happen for the second date
 }

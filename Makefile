@@ -3,7 +3,8 @@ SKIPL = build/linkedlist.o build/skiplist.o
 BF = build/bloomfilter.o
 LINK = -lm
 FILE_PARSING = build/hashmap.o build/bucketlist.o build/citizen.o build/country.o build/virus.o
-OBJ = build/inputParsing.o build/commands.o $(FILE_PARSING) $(SKIPL) $(BF)
+DATE_OPS = build/dateOps.o
+OBJ = build/inputParsing.o build/commands.o $(FILE_PARSING) $(DATE_OPS) $(SKIPL) $(BF)
 
 all: vaccineMonitor
 
@@ -17,6 +18,9 @@ vaccineMonitor: build/vaccineMonitor.o $(OBJ)
 
 testbuild/%.o: test/%.c
 	gcc $(FLAGS) $< -o $@
+
+testDates: testbuild/testDates.o $(DATE_OPS)
+	gcc -o testbuild/$@ $^ $(LINK)
 
 testSkipLists: testbuild/testSkipLists.o $(SKIPL)
 	gcc -o testbuild/testSkipLists $< $(SKIPL) $(LINK)

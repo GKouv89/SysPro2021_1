@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 #include "../include/commands.h"
 #include "../include/hashmap.h"
@@ -102,4 +103,22 @@ void list_non_vaccinated_persons(hashMap *viruses, unsigned char *virusName){
     return;
   }
   print_non_vaccinated_for(v);
+}
+
+void popStatusByAge(hashMap *viruses, hashMap *countries, unsigned char *country_name, unsigned char *virusName, char *startDate, char *endDate){
+  Virus *v = (Virus *) find_node(viruses, virusName);
+  if(v == NULL){
+    printf("ERROR: NO SUCH VIRUS EXISTS\n");
+    return;
+  }
+  if(country_name == NULL){
+    
+  }else{
+    Country *c = (Country *) find_node(countries, country_name);
+    if(c == NULL){
+      printf("ERROR: NO SUCH COUNTRY\n");
+      return;
+    }
+    print_skiplist_population_of_country(v->vaccinated_for, 1, c, startDate, endDate);
+  }
 }

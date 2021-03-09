@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "../include/skiplist.h"
+#include "../include/dateOps.h"
+#include "../include/country.h"
 
 void create_skiplist(skipList **s, int exp_data_count){
   (*s) = malloc(sizeof(skipList));
@@ -162,6 +164,36 @@ void print_skiplist_citizens(skipList *s){
   while(bottomList){
     print_citizen(bottomList->citizen);
     bottomList = bottomList->next;
+  }
+}
+
+void print_skiplist_population_of_country(skipList *s, int mode, Country *country, char *date1, char *date2){
+  listNode *bottomList = s->levels[0]->front;
+  #ifdef DEBUG
+  print_skiplist_citizens(s);
+  #endif
+  int vaccinated[4] = {0, 0, 0, 0};
+  while(bottomList){
+    #ifdef DEBUG
+    printf("startingDate: %s\tendingDate: %s\tvaccinationDate: %s\n", date1, date2, bottomList->vaccinationDate);
+    #endif
+    if(isEqual_country(bottomList->citizen->country, country->name) && !dateComparison(date1, bottomList->vaccinationDate) && !dateComparison(bottomList->vaccinationDate, date2)){
+      if(bottomList->citizen->age <= 20){
+        vaccinated[0]++;
+      }else if(bottomList->citizen->age > 20 && bottomList->citizen->age <= 40){
+        vaccinated[1]++;
+      }else if(bottomList->citizen->age > 40 && bottomList->citizen->age <= 60){
+        vaccinated[2]++;
+      }else{
+        vaccinated[3]++;
+      }
+    }
+    bottomList = bottomList->next;
+  }
+  if(mode == 1){
+    print_vaccination_ratios_byAge(country, vaccinated);
+  }else{
+    print_vaccination_ratio(country, vaccinated);
   }
 }
 
