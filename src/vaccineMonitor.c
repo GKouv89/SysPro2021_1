@@ -154,18 +154,20 @@ int main(int argc, char *argv[]){
       if(sscanf(rest, "%s %s %s %s", country, virusName, date1, date2) == 4){
         // checking for date validity
         dateValidity(date1, date2);
+        popStatusByAge(virus_map, country_map, country, virusName, date1, date2);
       }else if(sscanf(rest, "%s %s %s", virusName, date1, date2) == 3){
         // checking for date validity
         dateValidity(date1, date2);
+        popStatusByAge(virus_map, country_map, NULL, virusName, date1, date2);
       }else{
         printf("Bad arguments to /popStatusByAge. Try again.\n");
       }
-      popStatusByAge(virus_map, country_map, country, virusName, date1, date2);
     }else if(strcmp(comm_name, "/exit\n") == 0){
       break;
     }else{
       printf("Unknown command %s. Try again.\n", comm_name);
     }
+    printf("\n");
   }
   
   

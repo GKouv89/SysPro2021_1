@@ -34,6 +34,12 @@ void lookup_vacStatus_all(hashMap *map, unsigned char *citizenID){
   }
 }
 
+void lookup_popStatus_all(hashMap *map, int mode, Virus *v, char *startingDate, char *endingDate){
+  for(int i = 0; i < map->noOfBuckets; i++){
+    popStatus_all(map->map[i]->bl, mode, v, startingDate, endingDate);
+  }
+}
+
 void destroy_map(hashMap **map){
   for(int i = 0; i < (*map)->noOfBuckets; i++){
     destroy_bucketList(&((*map)->map[i]->bl));

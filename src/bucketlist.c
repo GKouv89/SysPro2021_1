@@ -65,6 +65,16 @@ void vacStatus_all(bucketList *bl, unsigned char *citizenID){
   }
 }
 
+void popStatus_all(bucketList *bl, int mode, Virus *v, char *startingDate, char *endingDate){
+  if(bl->type == Country_List){
+    bucketNode *temp = bl->front;
+    while(temp){
+      print_skiplist_population_of_country(v->vaccinated_for, mode, (Country *)temp->content, startingDate, endingDate);
+      temp = temp->next;
+    }
+  }
+}
+
 void destroy_bucketList(bucketList **bl){
   bucketNode *temp = (*bl)->front;
   bucketNode *to_del;

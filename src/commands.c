@@ -112,7 +112,7 @@ void popStatusByAge(hashMap *viruses, hashMap *countries, unsigned char *country
     return;
   }
   if(country_name == NULL){
-    
+    lookup_popStatus_all(countries, 1, v, startDate, endDate);
   }else{
     Country *c = (Country *) find_node(countries, country_name);
     if(c == NULL){
