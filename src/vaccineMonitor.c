@@ -138,6 +138,12 @@ int main(int argc, char *argv[]){
       }
     }else if(strcmp(comm_name, "/insertCitizenRecord") == 0){
       insertCitizenRecord(virus_map, country_map, citizen_map, bloomFiltersSize, rest);
+    }else if(strcmp(comm_name, "/list-nonVaccinated-Persons") == 0){
+      if(sscanf(rest, "%s", virusName) == 1){
+        list_non_vaccinated_persons(virus_map, virusName);
+      }else{
+        printf("Bad arguments to /list-nonVaccinated-Persons. Try again.\n");
+      }
     }else if(strcmp(comm_name, "/exit\n") == 0){
       break;
     }else{

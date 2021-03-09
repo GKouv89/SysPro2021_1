@@ -49,6 +49,10 @@ void print_virus_skiplists(Virus *v){
   print_skiplist(v->vaccinated_for);
 }
 
+void print_non_vaccinated_for(Virus *v){
+  print_skiplist_citizens(v->not_vaccinated_for);
+}
+
 int isEqual_virus(Virus *v, unsigned char *str){
   if(strcmp(v->name, str) == 0){
     return 1;

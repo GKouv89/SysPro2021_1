@@ -25,6 +25,9 @@ int isEqual_citizen(Citizen *c, unsigned char *str){
   }
 }
 
+void print_citizen(Citizen *c){
+  printf("%s %s %s %s %d\n", c->id, c->firstName, c->lastName, c->country->name, c->age);
+}
 
 void destroy_citizen(Citizen **cit){
   free((*cit)->id);

@@ -94,3 +94,12 @@ void insertCitizenRecord(hashMap *viruses, hashMap *countries, hashMap *citizens
     insert_in_vaccinated_for_list(temp_virus, atoi(citizenID), dateToken, temp_citizen);
   }
 }
+
+void list_non_vaccinated_persons(hashMap *viruses, unsigned char *virusName){
+  Virus *v = (Virus *) find_node(viruses, virusName);
+  if(v == NULL){
+    printf("No info available on virus %s\n", virusName);
+    return;
+  }
+  print_non_vaccinated_for(v);
+}

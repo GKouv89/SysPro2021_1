@@ -157,6 +157,14 @@ void print_skiplist(skipList *s){
   }
 }
 
+void print_skiplist_citizens(skipList *s){
+  listNode *bottomList = s->levels[0]->front;
+  while(bottomList){
+    print_citizen(bottomList->citizen);
+    bottomList = bottomList->next;
+  }
+}
+
 //////////////////////////////////////////////////////////////
 // In this function, we start from top to bottom            //
 // hoping to locate the node in one of the lists quickly.   //
