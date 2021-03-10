@@ -162,6 +162,17 @@ int main(int argc, char *argv[]){
       }else{
         printf("Bad arguments to /popStatusByAge. Try again.\n");
       }
+    }else if(strcmp(comm_name, "/popStatus") == 0){
+      if(sscanf(rest, "%s %s %s %s", country, virusName, date1, date2) == 4){
+        dateValidity(date1, date2);
+        popStatus(virus_map, country_map, country, virusName, date1, date2);
+      }else if(sscanf(rest, "%s %s %s", virusName, date1, date2) == 3){
+        // checking for date validity
+        dateValidity(date1, date2);
+        popStatus(virus_map, country_map, NULL, virusName, date1, date2);
+      }else{
+        printf("Bad arguments to /popStatus. Try again.\n");
+      }
     }else if(strcmp(comm_name, "/exit\n") == 0){
       break;
     }else{

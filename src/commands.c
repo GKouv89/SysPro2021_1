@@ -122,3 +122,21 @@ void popStatusByAge(hashMap *viruses, hashMap *countries, unsigned char *country
     print_skiplist_population_of_country(v->vaccinated_for, 1, c, startDate, endDate);
   }
 }
+
+void popStatus(hashMap *viruses, hashMap *countries, unsigned char *country_name, unsigned char *virusName, char *startDate, char *endDate){
+  Virus *v = (Virus *) find_node(viruses, virusName);
+  if(v == NULL){
+    printf("ERROR: NO SUCH VIRUS EXISTS\n");
+    return;
+  }
+  if(country_name == NULL){
+    lookup_popStatus_all(countries, 0, v, startDate, endDate);
+  }else{
+    Country *c = (Country *) find_node(countries, country_name);
+    if(c == NULL){
+      printf("ERROR: NO SUCH COUNTRY\n");
+      return;
+    }
+    print_skiplist_population_of_country(v->vaccinated_for, 0, c, startDate, endDate);
+  }
+}
