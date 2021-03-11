@@ -2,6 +2,8 @@
 build
 testbuild
 testing.txt 
+inputFile.txt
+appSession
 
 # Prerequisites
 *.d
