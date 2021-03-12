@@ -32,7 +32,7 @@ mapfile -t countries < $2
 countriesCount=${#countries[*]}
 virusesCount=${#viruses[*]}
 minidlength=1
-maxidlength=5
+maxidlength=4
 minlength=3
 maxlength=13  
 minage=1
@@ -44,21 +44,17 @@ recordsProduced=0
 while [ "$recordsProduced" -lt "$3" ]
 do
   # First, calculating ID
-  idlength=0
-  while [ "$idlength" -lt "$minidlength" ]
-  do
-    idlength=$RANDOM
-    let "idlength %= $maxidlength"
-  done  
+  idlength=$RANDOM
+  idlength=$(( $idlength % ( $maxidlength - $minidlength + 1 ) + $minidlength ))
   
   # echo Generating number with "$idlength" digit\(s\).
   id=0
   for((j = 1; j <= "$idlength"; j++))
   do
     digit=$RANDOM
-    let "digit %= 10"
-    let "id *= 10"
-    let "id = id + digit"
+    digit=$(( $digit % 10 ))
+    id=$(( $id * 10 ))
+    id=$(( $id + $digit ))
   done
   # echo Number is: $id.
   
@@ -72,46 +68,35 @@ do
   fi
 
   record="$id "
-  for((times = 1; times <= 2; times++))
-  do
+  # for((times = 1; times <= 2; times++))
+  # do
 
-    length=0
-    while [ "$length" -lt "$minlength" ]
-    do
-      length=$RANDOM
-      let "length %= $maxlength"
-    done
-
-    name=""
-    for((i = 1; i <= length; i++))
-    do
-      asc=0
-      minasc=65
-      maxasc=90
-      while [ "$asc" -lt "$minasc" ]
-      do
-        asc=$RANDOM
-        let "asc %= $maxasc"
-      done
-      printf -v character "\x$(printf %x $asc)"
-      name+=$character
-    done
-    record+=$name
-    record+=" "
-  done
+    # length=$RANDOM
+    # length=$(( $length % ( $maxlength - $minlength + 1) + $minlength ))
+    
+    # name=""
+    # minasc=65
+    # maxasc=90
+    # for((i = 1; i <= length; i++))
+    # do
+      # asc=$RANDOM
+      # asc=$(( $asc % ( $maxasc - $minasc + 1) + $minasc ))
+      # printf -v character "\x$(printf %x $asc)"
+      # name+=$character
+    # done
+    # record+=$name
+    # record+=" "
+  # done
 
   country=$RANDOM
-  let "country %= $countriesCount"
+  country=$(( $country % $countriesCount ))
   record+=${countries[$country]}
   record+=" "
 
   age=0
 
-  while [ $age -lt $minage ]
-  do
-    age=$RANDOM
-    let "age %= $maxage"
-  done
+  age=$RANDOM
+  age=$(( $age % 120 + 1 ))
   printf -v agestr %s $age
   record+=$agestr
   if [ "$recordsProduced" -eq 0 ]

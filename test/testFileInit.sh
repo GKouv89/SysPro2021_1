@@ -93,10 +93,10 @@ virusesCount=${#viruses[*]}
 # printf -v character "\x$(printf %x $asc)"
 # echo $character
 
-# minlength=3
-# maxlength=12
-# length=0
-
+minlength=3
+maxlength=12
+length=0
+modulo=`expr $maxlength - $minlength + 1`
 # while [ "$length" -lt "$minlength" ]
 # do
 	# length=$RANDOM
@@ -104,53 +104,60 @@ virusesCount=${#viruses[*]}
 # done
 # echo Random generated length is "$length".
 
-record=""
-minlength=3
-maxlength=12  
-for((times = 1; times <= 2; times++))
+for((i = 1; i <= 5; i++))
 do
-
-  length=0
-  while [ "$length" -lt "$minlength" ]
-  do
-    length=$RANDOM
-    let "length %= $maxlength"
-  done
-
-  name=""
-  for((i = 1; i <= length; i++))
-  do
-    asc=0
-    minasc=65
-    maxasc=90
-    while [ "$asc" -lt "$minasc" ]
-    do
-      asc=$RANDOM
-      let "asc %= $maxasc"
-    done
-    printf -v character "\x$(printf %x $asc)"
-    name+=$character
-  done
-  record+=$name
-  record+=" "
+  length=$RANDOM
+  length=$(( $length % ( $maxlength - $minlength + 1 ) + $minlength ))
+  echo Random generated length is $length.
 done
 
-country=$RANDOM
-let "country %= $countriesCount"
-record+=${countries[$country]}
-record+=" "
+# record=""
+# minlength=3
+# maxlength=12  
+# for((times = 1; times <= 2; times++))
+# do
 
-age=0
-minage=0
-maxage=121
-while [ $age -le $minage ]
-do
-  age=$RANDOM
-  let "age %= $maxage"
-done
-printf -v agestr %s $age
-record+=$agestr
-echo Record is $record
+  # length=0
+  # while [ "$length" -lt "$minlength" ]
+  # do
+    # length=$RANDOM
+    # let "length %= $maxlength"
+  # done
+
+  # name=""
+  # for((i = 1; i <= length; i++))
+  # do
+    # asc=0
+    # minasc=65
+    # maxasc=90
+    # while [ "$asc" -lt "$minasc" ]
+    # do
+      # asc=$RANDOM
+      # let "asc %= $maxasc"
+    # done
+    # printf -v character "\x$(printf %x $asc)"
+    # name+=$character
+  # done
+  # record+=$name
+  # record+=" "
+# done
+
+# country=$RANDOM
+# let "country %= $countriesCount"
+# record+=${countries[$country]}
+# record+=" "
+
+# age=0
+# minage=0
+# maxage=121
+# while [ $age -le $minage ]
+# do
+  # age=$RANDOM
+  # let "age %= $maxage"
+# done
+# printf -v agestr %s $age
+# record+=$agestr
+# echo Record is $record
 
 
 
