@@ -1,5 +1,28 @@
 #!/bin/bash
 
+generateDate () {
+  day=$RANDOM
+  day=$(( $day % 30 + 1 ))
+  if [ "$day" -lt 10 ]
+  then
+    printf -v day "0%s" $day
+  else
+    printf -v day %s $day
+  fi
+  month=$RANDOM
+  month=$(( $month % 12 + 1 ))
+  if [ "$month" -lt 10 ]
+  then
+    printf -v month "0%s" $month
+  else
+    printf -v month %s $month
+  fi
+  year=$RANDOM
+  year=$(( $year % 22 + 2000 ))
+  printf -v year %s $year
+  echo -n "${day}-${month}-${year}"
+}
+
 if [ $# -ne 4 ]
 then
   echo Invalid number of arguments.
@@ -34,9 +57,10 @@ virusesCount=${#viruses[*]}
 minidlength=1
 maxidlength=4
 minlength=3
-maxlength=13  
+maxlength=12
+characters=ABCDEFGHIJKLMNOPQRSTUVWXYZ  
 minage=1
-maxage=121
+maxage=120
 
 declare -A records
 declare -a ids
@@ -68,26 +92,22 @@ do
   fi
 
   record="$id "
-  # for((times = 1; times <= 2; times++))
-  # do
+  for((times = 1; times <= 2; times++))
+  do
 
-    # length=$RANDOM
-    # length=$(( $length % ( $maxlength - $minlength + 1) + $minlength ))
+    length=$RANDOM
+    length=$(( $length % ( $maxlength - $minlength + 1) + $minlength ))
     
-    # name=""
-    # minasc=65
-    # maxasc=90
-    # for((i = 1; i <= length; i++))
-    # do
-      # asc=$RANDOM
-      # asc=$(( $asc % ( $maxasc - $minasc + 1) + $minasc ))
-      # printf -v character "\x$(printf %x $asc)"
-      # name+=$character
-    # done
-    # record+=$name
-    # record+=" "
-  # done
-
+    name=""
+    for((i = 1; i <= "$length"; i++))
+    do
+      printf -v character "${characters:RANDOM%26:1}"
+      name+=$character
+    done
+    record+=$name
+    record+=" "
+  done
+  
   country=$RANDOM
   country=$(( $country % $countriesCount ))
   record+=${countries[$country]}
@@ -99,14 +119,41 @@ do
   age=$(( $age % 120 + 1 ))
   printf -v agestr %s $age
   record+=$agestr
+  ids+=($id)
+  records[$id]+=$record
+  
+  record+=" "
+  virus=$RANDOM
+  virus=$(( $virus % $virusesCount ))
+  record+=${viruses[$virus]}
+  record+=" "
+  
+  die=$RANDOM
+  die=$(( $die % 2 ))
+  if [ "$die" -eq 0 ]
+  then
+    record+="NO "
+    die=$RANDOM
+    die=$(( $die % 100 ))
+    if [ "$die" -le 30 ]
+    then
+      genDate=$(generateDate)
+      record+=$genDate
+    fi
+  else
+    record+="YES "
+    genDate=$(generateDate)
+    record+=$genDate
+  fi
+  
+
   if [ "$recordsProduced" -eq 0 ]
   then
     echo $record > inputFile.txt
   else
     echo $record >> inputFile.txt
   fi
-  ids+=($id)
-  records[$id]+=$record
+  
   let "recordsProduced += 1"
 done
 
