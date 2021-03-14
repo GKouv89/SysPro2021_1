@@ -1,5 +1,34 @@
 #!/bin/bash
 
+generateRestOfRecord () {
+  restOfRec=""
+  for((times = 1; times <= 2; times++))
+  do
+
+    length=$RANDOM
+    length=$(( $length % ( $maxlength - $minlength + 1) + $minlength ))
+    
+    name=""
+    for((i = 1; i <= "$length"; i++))
+    do
+      printf -v character "${characters:RANDOM%26:1}"
+      name+=$character
+    done
+    restOfRec+="$name "
+  done
+  
+  country=$RANDOM
+  country=$(( $country % $countriesCount ))
+  country=${countries[$country]}
+  restOfRec+="$country "
+
+  age=$RANDOM
+  age=$(( $age % 120 + 1 ))
+  printf -v agestr %s $age
+  restOfRec+="$agestr "
+  echo -n "$restOfRec"
+}
+
 generateDate () {
   day=$RANDOM
   day=$(( $day % 30 + 1 ))
@@ -21,6 +50,31 @@ generateDate () {
   year=$(( $year % 22 + 2000 ))
   printf -v year %s $year
   echo -n "${day}-${month}-${year}"
+}
+
+generateVaccination () {
+  virus=$RANDOM
+  virus=$(( $virus % $virusesCount ))
+  vac="${viruses[$virus]} "
+  
+  die=$RANDOM
+  die=$(( $die % 2 ))
+  if [ "$die" -eq 0 ]
+  then
+    vac+="NO "
+    die=$RANDOM
+    die=$(( $die % 100 ))
+    if [ "$die" -le 30 ]
+    then
+      genDate=$(generateDate)
+      vac+=$genDate
+    fi
+  else
+    vac+="YES "
+    genDate=$(generateDate)
+    vac+=$genDate
+  fi
+  echo -n "$vac"
 }
 
 if [ $# -ne 4 ]
@@ -63,89 +117,64 @@ minage=1
 maxage=120
 
 declare -A records
+declare -A idAppearances
 declare -a ids
 recordsProduced=0
+dupesRequired=$( echo "scale=3; $3*20/100" | bc )
+printf -v dupesRequired %.0f "$dupesRequired"
+
+# In case we have too few records, we ensure that at least one will be a duplicate
+# of another one
+if [ "$dupesRequired" -eq 0 ]
+then
+  dupesRequired=1
+fi
+
+dupesRequired=$(( $3 - $dupesRequired + 1))
+# echo After reaching the $dupesRequired record, we will force creating duplicates.
+
 while [ "$recordsProduced" -lt "$3" ]
 do
-  # First, calculating ID
-  idlength=$RANDOM
-  idlength=$(( $idlength % ( $maxidlength - $minidlength + 1 ) + $minidlength ))
-  
-  # echo Generating number with "$idlength" digit\(s\).
-  id=0
-  for((j = 1; j <= "$idlength"; j++))
-  do
-    digit=$RANDOM
-    digit=$(( $digit % 10 ))
-    id=$(( $id * 10 ))
-    id=$(( $id + $digit ))
-  done
-  # echo Number is: $id.
-  
-  if [ "$4" -eq 0 ]
+  # First, calculating ID if duplicatesNotAllowed or if duplicatesAllowed 
+  # and we haven't reached the point of duplicate production yet
+  if [ "$4" -eq 0 ] || [[ "$4" -eq 1 && "$recordsProduced" -lt "$dupesRequired" ]]
   then
-    if [[ ${ids[*]} =~ $id ]]
-    then
-      # echo ID already exists. Moving on to next rep.
-      continue
-    fi
-  fi
-
-  record="$id "
-  for((times = 1; times <= 2; times++))
-  do
-
-    length=$RANDOM
-    length=$(( $length % ( $maxlength - $minlength + 1) + $minlength ))
+    idlength=$RANDOM
+    idlength=$(( $idlength % ( $maxidlength - $minidlength + 1 ) + $minidlength ))
     
-    name=""
-    for((i = 1; i <= "$length"; i++))
+    id=0
+    for((j = 1; j <= "$idlength"; j++))
     do
-      printf -v character "${characters:RANDOM%26:1}"
-      name+=$character
+      digit=$RANDOM
+      digit=$(( $digit % 10 ))
+      id=$(( $id * 10 ))
+      id=$(( $id + $digit ))
     done
-    record+=$name
-    record+=" "
-  done
-  
-  country=$RANDOM
-  country=$(( $country % $countriesCount ))
-  record+=${countries[$country]}
-  record+=" "
-
-  age=0
-
-  age=$RANDOM
-  age=$(( $age % 120 + 1 ))
-  printf -v agestr %s $age
-  record+=$agestr
-  ids+=($id)
-  records[$id]+=$record
-  
-  record+=" "
-  virus=$RANDOM
-  virus=$(( $virus % $virusesCount ))
-  record+=${viruses[$virus]}
-  record+=" "
-  
-  die=$RANDOM
-  die=$(( $die % 2 ))
-  if [ "$die" -eq 0 ]
-  then
-    record+="NO "
-    die=$RANDOM
-    die=$(( $die % 100 ))
-    if [ "$die" -le 30 ]
+    
+    if [ "$4" -eq 0 ]
     then
-      genDate=$(generateDate)
-      record+=$genDate
+      if [[ ${ids[*]} =~ $id ]]
+      then
+        continue
+      fi
+      record="$id "
+      record+=$(generateRestOfRecord)
+      ids+=($id)
+      if [[ -v "idAppearances[$id]" ]]
+      then
+        idAppearances[$id]+=1
+      else
+        ((idAppearances[$id]++))
+      fi
+      records[$id]+=$record
+      record+=$(generateVaccination)
+    else
+      if [[ -v ${records[$id]} ]]
+      then
+        record=${records[$id]}
+      fi
     fi
-  else
-    record+="YES "
-    genDate=$(generateDate)
-    record+=$genDate
   fi
-  
 
   if [ "$recordsProduced" -eq 0 ]
   then
@@ -157,6 +186,7 @@ do
   let "recordsProduced += 1"
 done
 
-
-
-
+# for key in "${!idAppearances[@]}"
+# do 
+  # echo "$key => ${idAppearances[$key]}"
+# done
