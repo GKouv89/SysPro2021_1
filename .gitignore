@@ -4,6 +4,7 @@ testbuild
 testing.txt 
 inputFile.txt
 appSession
+massif.out.*
 
 # Prerequisites
 *.d

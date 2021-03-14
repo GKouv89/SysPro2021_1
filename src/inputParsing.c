@@ -81,6 +81,7 @@ void inputFileParsing(hashMap *countries, hashMap *citizens, hashMap *viruses, F
           // and second record says citizen is vaccinated.
           continue;
         }
+        // printf("looking to see whether %s is vaccinated against %s\n", id, virus->name);
         if(lookup_in_virus_vaccinated_for_list(virus, atoi(id))){
           // Ignoring duplicate case where both records for same citizen and virus
           // mention that the citizen is vaccinated for the virus but the records

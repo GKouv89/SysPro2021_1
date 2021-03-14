@@ -141,7 +141,7 @@ listNode* lookup_skiplist(skipList *s, int id){
   }
   listNode *infoNode;
   if(found){
-    infoNode = cascade(bounds_arg->start);
+    infoNode = cascade(bounds_ret->start);
     free(bounds_arg);
     free(bounds_ret);
     return infoNode;

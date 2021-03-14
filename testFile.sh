@@ -117,7 +117,6 @@ minage=1
 maxage=120
 
 declare -A records
-declare -A idAppearances
 declare -a ids
 recordsProduced=0
 dupesRequired=$( echo "scale=3; $3*20/100" | bc )
@@ -138,6 +137,7 @@ do
   # First, calculating ID if duplicatesNotAllowed or if duplicatesAllowed 
   # and we haven't reached the point of duplicate production yet
   if [ "$4" -eq 0 ] || [[ "$4" -eq 1 && "$recordsProduced" -lt "$dupesRequired" ]]
+  # if [ "$4" -eq 0 ] || [ "$4" -eq 1 ]
   then
     idlength=$RANDOM
     idlength=$(( $idlength % ( $maxidlength - $minidlength + 1 ) + $minidlength ))
@@ -160,20 +160,30 @@ do
       record="$id "
       record+=$(generateRestOfRecord)
       ids+=($id)
-      if [[ -v "idAppearances[$id]" ]]
-      then
-        idAppearances[$id]+=1
-      else
-        ((idAppearances[$id]++))
-      fi
       records[$id]+=$record
       record+=$(generateVaccination)
     else
-      if [[ -v ${records[$id]} ]]
+      if [[ -v "records[$id]" ]]
       then
+        # echo DUPLICATE.
         record=${records[$id]}
+      else
+        record="$id "
+        record+=$(generateRestOfRecord)
+        records[$id]+=$record
+        ids+=($id)
       fi
+      record+=$(generateVaccination)
     fi
+  # else
+    # # In this case, we have reached the last few (compared to file size lines)
+    # # and here we will pick one id from the id array and generate another record
+    # # for it. While for larger files we do not necessarily need this step, it increases the
+    # # chane that there will be duplicate entries for the same citizen AND virus
+    # # because of the small count of viruses available.
+    # echo So far, ${#ids[@]} generated
+    # index=$RANDOM
+    # index=$(( $index % ${#ids[@]} ))
   fi
 
   if [ "$recordsProduced" -eq 0 ]
@@ -186,7 +196,15 @@ do
   let "recordsProduced += 1"
 done
 
-# for key in "${!idAppearances[@]}"
+# for key in "${!records[@]}"
 # do 
-  # echo "$key => ${idAppearances[$key]}"
+  # echo "$key => ${records[$key]}"
 # done
+
+# records[3141]+="3141 MIKE WASOWSKI USA 32 SNEEZE YES 01-01-2018"
+# if [[ -v "records[3141]" ]]
+# then
+  # echo exists.
+# else
+  # echo doesn\'t exist.
+# fi
