@@ -13,7 +13,7 @@ void dateValidity(char *date1, char *date2){
       printf("End date before start date.\n");
     }
   }else{
-    printf("Invalid start and/or end date.\n");
+    printf("ERROR.\n");
   }
 }
 

@@ -167,34 +167,47 @@ void print_skiplist_citizens(skipList *s){
   }
 }
 
-void print_skiplist_population_of_country(skipList *s, int mode, Country *country, char *date1, char *date2){
+population* skiplist_vac_status_country(skipList *s, int mode, Country *country, char *date1, char *date2){
   listNode *bottomList = s->levels[0]->front;
   #ifdef DEBUG
   print_skiplist_citizens(s);
   #endif
-  int vaccinated[4] = {0, 0, 0, 0};
+  // int vaccinated[4] = {0, 0, 0, 0};
+  population *pop = malloc(sizeof(population));
+  for(int i = 0; i < 4; i++){
+    pop->popByAgeGroup[i] = 0;
+  }
   while(bottomList){
     #ifdef DEBUG
     printf("startingDate: %s\tendingDate: %s\tvaccinationDate: %s\n", date1, date2, bottomList->vaccinationDate);
     #endif
-    if(isEqual_country(bottomList->citizen->country, country->name) && !dateComparison(date1, bottomList->vaccinationDate) && !dateComparison(bottomList->vaccinationDate, date2)){
-      if(bottomList->citizen->age <= 20){
-        vaccinated[0]++;
-      }else if(bottomList->citizen->age > 20 && bottomList->citizen->age <= 40){
-        vaccinated[1]++;
-      }else if(bottomList->citizen->age > 40 && bottomList->citizen->age <= 60){
-        vaccinated[2]++;
-      }else{
-        vaccinated[3]++;
+    if(isEqual_country(bottomList->citizen->country, country->name)){
+      if(mode == 1){
+        if(dateComparison(date1, bottomList->vaccinationDate) || dateComparison(bottomList->vaccinationDate, date2) ){
+          bottomList = bottomList->next;
+          continue;
+        }
+      }
+      if(isEqual_country(bottomList->citizen->country, country->name) ){
+        if(bottomList->citizen->age <= 20){
+          pop->popByAgeGroup[0]++;
+        }else if(bottomList->citizen->age > 20 && bottomList->citizen->age <= 40){
+          pop->popByAgeGroup[1]++;
+        }else if(bottomList->citizen->age > 40 && bottomList->citizen->age <= 60){
+          pop->popByAgeGroup[2]++;
+        }else{
+          pop->popByAgeGroup[3]++;
+        }
       }
     }
     bottomList = bottomList->next;
   }
-  if(mode == 1){
-    print_vaccination_ratios_byAge(country, vaccinated);
-  }else{
-    print_vaccination_ratio(country, vaccinated);
-  }
+  return pop;
+  // if(mode == 1){
+    // print_vaccination_ratios_byAge(country, vaccinated);
+  // }else{
+    // print_vaccination_ratio(country, vaccinated);
+  // }
 }
 
 //////////////////////////////////////////////////////////////

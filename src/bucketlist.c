@@ -69,7 +69,50 @@ void popStatus_all(bucketList *bl, int mode, Virus *v, char *startingDate, char 
   if(bl->type == Country_List){
     bucketNode *temp = bl->front;
     while(temp){
-      print_skiplist_population_of_country(v->vaccinated_for, mode, (Country *)temp->content, startingDate, endingDate);
+      population *pop = skiplist_vac_status_country(v->vaccinated_for, 1, (Country *)temp->content, startingDate, endingDate);
+      population *popNo = skiplist_vac_status_country(v->not_vaccinated_for, 0, (Country *)temp->content, startingDate, endingDate);
+      if(mode == 0){
+        printf("%s ", ((Country *)temp->content)->name);
+        int overallVac = 0;
+        int overallPop = 0;
+        for(int i = 0; i < 4; i++){
+          overallVac += pop->popByAgeGroup[i];
+          overallPop += pop->popByAgeGroup[i] + popNo->popByAgeGroup[i];
+        }
+        if(overallPop == 0 && overallVac == 0){
+          printf("0 0%%\n");
+        }else{
+          printf("%d %.2lf%%\n", overallVac, ((double)overallVac/(double)overallPop)*100);
+        }
+      }else{
+        printf("%s ", ((Country *)temp->content)->name);
+        int overallPop[4] = {0, 0, 0, 0};
+        for(int i = 0; i < 4; i++){
+          overallPop[i] += pop->popByAgeGroup[i] + popNo->popByAgeGroup[i];
+        }
+        if(overallPop[0] == 0){
+          printf("0-20 0 0%%\n");
+        }else{
+          printf("0-20 %d %.2lf%%\n", pop->popByAgeGroup[0], ((double)pop->popByAgeGroup[0]/(double)overallPop[0])*100);
+        }
+        if(overallPop[1] == 0){
+          printf("21-40 0 0%%\n");
+        }else{
+          printf("21-40 %d %.2lf%%\n", pop->popByAgeGroup[1], ((double)pop->popByAgeGroup[1]/(double)overallPop[1])*100);
+        }
+        if(overallPop[2] == 0){
+          printf("41-60 0 0%%\n");
+        }else{
+          printf("41-60 %d %.2lf%%\n", pop->popByAgeGroup[2], ((double)pop->popByAgeGroup[2]/(double)overallPop[2])*100);
+        }
+        if(overallPop[3] == 0){
+          printf("60+ 0 0%%\n");
+        }else{
+          printf("60+ %d %.2lf%%\n", pop->popByAgeGroup[3], ((double)pop->popByAgeGroup[3]/(double)overallPop[3])*100);
+        }
+      }
+      free(pop);
+      free(popNo);  
       temp = temp->next;
     }
   }

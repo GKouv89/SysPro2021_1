@@ -6,6 +6,10 @@ typedef struct country{
   unsigned int popByAgeGroup[4];
 } Country;
 
+typedef struct pops{
+  unsigned int popByAgeGroup[4];  
+} population;
+
 Country* create_country(const char *);
 void update_population(Country *, int);
 int isEqual_country(Country *, unsigned char *);
