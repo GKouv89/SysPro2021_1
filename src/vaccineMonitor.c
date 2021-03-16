@@ -134,7 +134,7 @@ int main(int argc, char *argv[]){
         }
         temp_virus = (Virus *) find_node(virus_map, virusName);
         if(temp_virus == NULL){
-          temp_virus = create_virus(virusName, 100, bloomFiltersSize, 16);
+          temp_virus = create_virus(virusName, 7850000000, bloomFiltersSize, 16);
           insert(virus_map, virusName, temp_virus);        
         }
         vaccinateNow(temp_virus, citizenID, date, temp_citizen);

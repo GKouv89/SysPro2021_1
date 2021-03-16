@@ -6,7 +6,7 @@
 #include "../include/dateOps.h"
 #include "../include/country.h"
 
-void create_skiplist(skipList **s, int exp_data_count){
+void create_skiplist(skipList **s, unsigned long long exp_data_count){
   (*s) = malloc(sizeof(skipList));
   (*s)->height = 1; 
   // (*s)->max_height = log10(exp_data_count)/log10(2);

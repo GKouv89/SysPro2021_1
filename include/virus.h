@@ -11,7 +11,7 @@ typedef struct virus{
   bloomFilter *virusBF;
 } Virus;
 
-Virus* create_virus(const char *, int, int, int);
+Virus* create_virus(const char *, unsigned long long, int, int);
 void insert_in_virus_bloomFilter(Virus *, unsigned char *);
 char* insert_in_vaccinated_for_list(Virus *, int, char *, Citizen *);
 void insert_in_not_vaccinated_for_list(Virus *, int, Citizen *);

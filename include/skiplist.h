@@ -11,7 +11,7 @@ typedef struct skiplist{
   list **levels;
 } skipList;
 
-void create_skiplist(skipList **, int);
+void create_skiplist(skipList **, unsigned long long);
 char* insert_skipnode(skipList *, int, char *, Citizen *);
 void delete_skipnode(skipList *, int);
 void print_skiplist(skipList *);

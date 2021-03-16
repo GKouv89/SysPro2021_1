@@ -62,7 +62,7 @@ void insertCitizenRecord(hashMap *viruses, hashMap *countries, hashMap *citizens
   }
   Virus *temp_virus = (Virus *) find_node(viruses, virusName);
   if(temp_virus == NULL){
-    temp_virus = create_virus(virusName, 100, bloomFiltersSize, 16);
+    temp_virus = create_virus(virusName, 7850000000, bloomFiltersSize, 16);
     insert(viruses, virusName, temp_virus);        
   }
   char *vacStatus = strtok_r(NULL, " ", &rest);

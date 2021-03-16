@@ -4,7 +4,7 @@
 
 #include "../include/virus.h"
 
-Virus* create_virus(const char *name, int skiplist_max, int bloomfilter_max, int hf_count){
+Virus* create_virus(const char *name, unsigned long long skiplist_max, int bloomfilter_max, int hf_count){
   Virus *v = malloc(sizeof(Virus));
   v->name = malloc((strlen(name) + 1)*sizeof(char));
   strcpy(v->name, name);

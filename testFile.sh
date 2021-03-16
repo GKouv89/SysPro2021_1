@@ -1,7 +1,7 @@
 #!/bin/bash
 
 generateRestOfRecord () {
-  restOfRec=""
+  restOfRecord=""
   for((times = 1; times <= 2; times++))
   do
 
@@ -14,22 +14,22 @@ generateRestOfRecord () {
       printf -v character "${characters:RANDOM%26:1}"
       name+=$character
     done
-    restOfRec+="$name "
+    restOfRecord+="$name "
   done
   
   country=$RANDOM
   country=$(( $country % $countriesCount ))
   country=${countries[$country]}
-  restOfRec+="$country "
+  restOfRecord+="$country "
 
   age=$RANDOM
   age=$(( $age % 120 + 1 ))
   printf -v agestr %s $age
-  restOfRec+="$agestr "
-  echo -n "$restOfRec"
+  restOfRecord+="$agestr "
 }
 
 generateDate () {
+  fullDate=""
   day=$RANDOM
   day=$(( $day % 30 + 1 ))
   if [ "$day" -lt 10 ]
@@ -38,6 +38,7 @@ generateDate () {
   else
     printf -v day %s $day
   fi
+  fullDate+="$day-"
   month=$RANDOM
   month=$(( $month % 12 + 1 ))
   if [ "$month" -lt 10 ]
@@ -46,10 +47,11 @@ generateDate () {
   else
     printf -v month %s $month
   fi
+  fullDate+="$month-"
   year=$RANDOM
   year=$(( $year % 22 + 2000 ))
   printf -v year %s $year
-  echo -n "${day}-${month}-${year}"
+  fullDate+="$year"
 }
 
 generateVaccination () {
@@ -66,15 +68,14 @@ generateVaccination () {
     die=$(( $die % 100 ))
     if [ "$die" -le 30 ]
     then
-      genDate=$(generateDate)
-      vac+=$genDate
+      generateDate
+      vac+="$fullDate"
     fi
   else
     vac+="YES "
-    genDate=$(generateDate)
-    vac+=$genDate
+    generateDate
+    vac+="$fullDate"
   fi
-  echo -n "$vac"
 }
 
 if [ $# -ne 4 ]
@@ -119,7 +120,7 @@ maxage=120
 declare -A records
 declare -a ids
 recordsProduced=0
-dupesRequired=$( echo "scale=3; $3*20/100" | bc )
+# dupesRequired=$( echo "scale=3; $3*20/100" | bc )
 printf -v dupesRequired %.0f "$dupesRequired"
 
 # In case we have too few records, we ensure that at least one will be a duplicate
@@ -129,16 +130,16 @@ then
   dupesRequired=1
 fi
 
-dupesRequired=$(( $3 - $dupesRequired + 1))
+# dupesRequired=$(( $3 - $dupesRequired + 1))
 # echo After reaching the $dupesRequired record, we will force creating duplicates.
 
 while [ "$recordsProduced" -lt "$3" ]
 do
   # First, calculating ID if duplicatesNotAllowed or if duplicatesAllowed 
   # and we haven't reached the point of duplicate production yet
-  if [ "$4" -eq 0 ] || [[ "$4" -eq 1 && "$recordsProduced" -lt "$dupesRequired" ]]
+  #if [ "$4" -eq 0 ] || [[ "$4" -eq 1 && "$recordsProduced" -lt "$dupesRequired" ]]
   # if [ "$4" -eq 0 ] || [ "$4" -eq 1 ]
-  then
+  # then
     idlength=$RANDOM
     idlength=$(( $idlength % ( $maxidlength - $minidlength + 1 ) + $minidlength ))
     
@@ -158,10 +159,12 @@ do
         continue
       fi
       record="$id "
-      record+=$(generateRestOfRecord)
+      generateRestOfRecord
+      record+="$restOfRecord"
       ids+=($id)
       records[$id]+=$record
-      record+=$(generateVaccination)
+      generateVaccination
+      record+="$vac"
     else
       if [[ -v "records[$id]" ]]
       then
@@ -169,11 +172,13 @@ do
         record=${records[$id]}
       else
         record="$id "
-        record+=$(generateRestOfRecord)
+        generateRestOfRecord
+        record+="$restOfRecord"
         records[$id]+=$record
         ids+=($id)
       fi
-      record+=$(generateVaccination)
+      generateVaccination
+      record+="$vac"
     fi
   # else
     # # In this case, we have reached the last few (compared to file size lines)
@@ -184,7 +189,7 @@ do
     # echo So far, ${#ids[@]} generated
     # index=$RANDOM
     # index=$(( $index % ${#ids[@]} ))
-  fi
+  # fi
 
   if [ "$recordsProduced" -eq 0 ]
   then
@@ -195,16 +200,3 @@ do
   
   let "recordsProduced += 1"
 done
-
-# for key in "${!records[@]}"
-# do 
-  # echo "$key => ${records[$key]}"
-# done
-
-# records[3141]+="3141 MIKE WASOWSKI USA 32 SNEEZE YES 01-01-2018"
-# if [[ -v "records[3141]" ]]
-# then
-  # echo exists.
-# else
-  # echo doesn\'t exist.
-# fi
