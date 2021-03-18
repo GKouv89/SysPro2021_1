@@ -167,42 +167,86 @@ void print_skiplist_citizens(skipList *s){
   }
 }
 
-population* skiplist_vac_status_country(skipList *s, int mode, Country *country, char *date1, char *date2){
+void* skiplist_vac_status_country(skipList *s, int vacMode, int ageMode, Country *country, char *date1, char *date2){
   listNode *bottomList = s->levels[0]->front;
   #ifdef DEBUG
   print_skiplist_citizens(s);
   #endif
   // int vaccinated[4] = {0, 0, 0, 0};
-  population *pop = malloc(sizeof(population));
-  for(int i = 0; i < 4; i++){
-    pop->popByAgeGroup[i] = 0;
+  // population *pop = malloc(sizeof(population));
+  void *vacs;
+  if(ageMode == 0){
+    vacs = malloc(sizeof(struct vaccinations));
+    ((struct vaccinations *)vacs)->inRange = 0;
+    ((struct vaccinations *)vacs)->overall = 0;
   }
+  // for(int i = 0; i < 4; i++){
+    // pop->popByAgeGroup[i] = 0;
+  // }
   while(bottomList){
     #ifdef DEBUG
     printf("startingDate: %s\tendingDate: %s\tvaccinationDate: %s\n", date1, date2, bottomList->vaccinationDate);
     #endif
     if(isEqual_country(bottomList->citizen->country, country->name)){
-      if(mode == 1){
-        if(dateComparison(date1, bottomList->vaccinationDate) || dateComparison(bottomList->vaccinationDate, date2) ){
+      if(vacMode == 1){
+        if(dateComparison(date1, bottomList->vaccinationDate) || dateComparison(bottomList->vaccinationDate, date2)){
+          if(ageMode == 0){
+            ((struct vaccinations *)vacs)->overall++;
+          }else{
+            // increase overall per age group
+          }
           bottomList = bottomList->next;
           continue;
-        }
-      }
-      if(isEqual_country(bottomList->citizen->country, country->name) ){
-        if(bottomList->citizen->age <= 20){
-          pop->popByAgeGroup[0]++;
-        }else if(bottomList->citizen->age > 20 && bottomList->citizen->age <= 40){
-          pop->popByAgeGroup[1]++;
-        }else if(bottomList->citizen->age > 40 && bottomList->citizen->age <= 60){
-          pop->popByAgeGroup[2]++;
         }else{
-          pop->popByAgeGroup[3]++;
+          if(ageMode == 0){
+            ((struct vaccinations *)vacs)->inRange++;
+            ((struct vaccinations *)vacs)->overall++;
+          }else{
+            // increase overall per age group
+            // increase inRange per age group
+          }
+        }
+      }else{
+        if(ageMode == 0){
+          ((struct vaccinations *)vacs)->overall++;
+        }else{
+          // increase overall per age group 
         }
       }
+      
+      // PSEUDOCODE
+      // If we are in the vaccinated list...
+        // if we wish to check per age group
+          // we look at the dates
+          // if in range
+            // increase in range per age group
+          // increase overall per age group
+        // else
+          // we look at the dates
+          // if in range
+            // increase in range
+          // increase overall
+      // else
+        // if we wish to check per age group
+          // increase per age group
+        // else
+          // increase 
+      
+      // if(isEqual_country(bottomList->citizen->country, country->name) ){
+        // if(bottomList->citizen->age <= 20){
+          // pop->popByAgeGroup[0]++;
+        // }else if(bottomList->citizen->age > 20 && bottomList->citizen->age <= 40){
+          // pop->popByAgeGroup[1]++;
+        // }else if(bottomList->citizen->age > 40 && bottomList->citizen->age <= 60){
+          // pop->popByAgeGroup[2]++;
+        // }else{
+          // pop->popByAgeGroup[3]++;
+        // }
+      // }
     }
     bottomList = bottomList->next;
   }
-  return pop;
+  return vacs;
   // if(mode == 1){
     // print_vaccination_ratios_byAge(country, vaccinated);
   // }else{

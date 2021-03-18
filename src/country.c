@@ -58,19 +58,16 @@ void print_vaccination_ratios_byAge(Country *c, int vaccinated[]){
   }
 }
 
-void print_vaccination_ratio(Country *c, int vaccinated[]){
+void print_vaccination_ratio(Country *c, struct vaccinations *vacced, struct vaccinations *notVacced){
   printf("%s ", c->name);
-  int overallPopulation = 0;
-  int overallVaccinated = 0;
-  for(int i = 0; i < 4; i++){
-    overallVaccinated += vaccinated[i];
-    overallPopulation += c->popByAgeGroup[i];
-  }
-  if(overallPopulation == 0 && overallVaccinated == 0){
+  int overallPop = vacced->overall + notVacced->overall;
+  if(overallPop == 0){
     printf("0 0%%\n");
   }else{
-    printf("%d %.2lf%%\n", overallVaccinated, ((double)overallVaccinated/(double)overallPopulation)*100);
+    printf("%d %.2lf%%\n", vacced->inRange, ((double)vacced->inRange/(double)overallPop)*100);
   }
+  free(vacced);
+  free(notVacced);
 }
 
 void destroy_country(Country **c){
