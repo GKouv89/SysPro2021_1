@@ -106,49 +106,23 @@ void list_non_vaccinated_persons(hashMap *viruses, unsigned char *virusName){
 }
 
 void popStatusByAge(hashMap *viruses, hashMap *countries, unsigned char *country_name, unsigned char *virusName, char *startDate, char *endDate){
-  // Virus *v = (Virus *) find_node(viruses, virusName);
-  // if(v == NULL){
-    // printf("ERROR: NO SUCH VIRUS EXISTS\n");
-    // return;
-  // }
-  // if(country_name == NULL){
-    // lookup_popStatus_all(countries, 1, v, startDate, endDate);
-  // }else{
-    // Country *c = (Country *) find_node(countries, country_name);
-    // if(c == NULL){
-      // printf("ERROR: NO SUCH COUNTRY\n");
-      // return;
-    // }
-    // population *pop = skiplist_vac_status_country(v->vaccinated_for, 1, c, startDate, endDate);
-    // population *popNo = skiplist_vac_status_country(v->not_vaccinated_for, 0, c, startDate, endDate);
-    // printf("%s ", c->name);
-    // int overallPop[4] = {0, 0, 0, 0};
-    // for(int i = 0; i < 4; i++){
-      // overallPop[i] += pop->popByAgeGroup[i] + popNo->popByAgeGroup[i];
-    // }
-    // if(overallPop[0] == 0){
-      // printf("0-20 0 0%%\n");
-    // }else{
-      // printf("0-20 %d %.2lf%%\n", pop->popByAgeGroup[0], ((double)pop->popByAgeGroup[0]/(double)overallPop[0])*100);
-    // }
-    // if(overallPop[1] == 0){
-      // printf("21-40 0 0%%\n");
-    // }else{
-      // printf("21-40 %d %.2lf%%\n", pop->popByAgeGroup[1], ((double)pop->popByAgeGroup[1]/(double)overallPop[1])*100);
-    // }
-    // if(overallPop[2] == 0){
-      // printf("41-60 0 0%%\n");
-    // }else{
-      // printf("41-60 %d %.2lf%%\n", pop->popByAgeGroup[2], ((double)pop->popByAgeGroup[2]/(double)overallPop[2])*100);
-    // }
-    // if(overallPop[3] == 0){
-      // printf("60+ 0 0%%\n");
-    // }else{
-      // printf("60+ %d %.2lf%%\n", pop->popByAgeGroup[3], ((double)pop->popByAgeGroup[3]/(double)overallPop[3])*100);
-    // }
-    // free(pop);
-    // free(popNo);
-  // }
+  Virus *v = (Virus *) find_node(viruses, virusName);
+  if(v == NULL){
+    printf("ERROR: NO SUCH VIRUS EXISTS\n");
+    return;
+  }
+  if(country_name == NULL){
+    lookup_popStatus_all(countries, 1, v, startDate, endDate);
+  }else{
+    Country *c = (Country *) find_node(countries, country_name);
+    if(c == NULL){
+      printf("ERROR: NO SUCH COUNTRY\n");
+      return;
+    }
+    struct vaccinationsAgeGroup *vacced = (struct vaccinationsAgeGroup *) skiplist_vac_status_country(v->vaccinated_for, 1, 1, c, startDate, endDate);
+    struct vaccinationsAgeGroup *notVacced = (struct vaccinationsAgeGroup *) skiplist_vac_status_country(v->not_vaccinated_for, 0, 1, c, startDate, endDate);
+    print_vaccination_ratios_byAge(c, vacced, notVacced);
+  }
 }
 
 void popStatus(hashMap *viruses, hashMap *countries, unsigned char *country_name, unsigned char *virusName, char *startDate, char *endDate){

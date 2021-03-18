@@ -34,28 +34,34 @@ int isEqual_country(Country *c, unsigned char *str){
   }
 }
 
-void print_vaccination_ratios_byAge(Country *c, int vaccinated[]){
+void print_vaccination_ratios_byAge(Country *c, struct vaccinationsAgeGroup *vacced, struct vaccinationsAgeGroup *notVacced){
   printf("%s\n", c->name);
-  if(c->popByAgeGroup[0] == 0){
+  int overallPopByGroup[4];
+  for(int i = 0; i < 4; i++){
+    overallPopByGroup[i] = vacced->overall[i] + notVacced->overall[i];
+  }
+  if(overallPopByGroup[0] == 0){
     printf("0-20 0 0%%\n");
   }else{
-    printf("0-20 %d %.2lf%%\n", vaccinated[0], ((double)vaccinated[0]/(double)c->popByAgeGroup[0])*100);
+    printf("0-20 %d %.2lf%%\n", vacced->inRange[0], ((double)vacced->inRange[0]/(double)overallPopByGroup[0])*100);
   }
-  if(c->popByAgeGroup[1] == 0){
+  if(overallPopByGroup[1] == 0){
     printf("21-40 0 0%%\n");
   }else{
-    printf("21-40 %d %.2lf%%\n", vaccinated[1], ((double)vaccinated[1]/(double)c->popByAgeGroup[1])*100);
+    printf("21-40 %d %.2lf%%\n", vacced->inRange[1], ((double)vacced->inRange[1]/(double)overallPopByGroup[1])*100);
   }
-  if(c->popByAgeGroup[2] == 0){
+  if(overallPopByGroup[2] == 0){
     printf("41-60 0 0%%\n");
   }else{
-    printf("41-60 %d %.2lf%%\n", vaccinated[2], ((double)vaccinated[2]/(double)c->popByAgeGroup[2])*100);
+    printf("41-60 %d %.2lf%%\n", vacced->inRange[2], ((double)vacced->inRange[2]/(double)overallPopByGroup[2])*100);
   }
-  if(c->popByAgeGroup[3] == 0){
+  if(overallPopByGroup[3] == 0){
     printf("60+ 0 0%%\n");
   }else{
-    printf("60+ %d %.2lf%%\n", vaccinated[3], ((double)vaccinated[3]/(double)c->popByAgeGroup[3])*100);
+    printf("60+ %d %.2lf%%\n", vacced->inRange[3], ((double)vacced->inRange[3]/(double)overallPopByGroup[3])*100);
   }
+  free(vacced);
+  free(notVacced);
 }
 
 void print_vaccination_ratio(Country *c, struct vaccinations *vacced, struct vaccinations *notVacced){

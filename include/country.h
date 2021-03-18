@@ -15,10 +15,15 @@ struct vaccinations{
   unsigned int overall;
 };
 
+struct vaccinationsAgeGroup{
+  unsigned int inRange[4];
+  unsigned int overall[4];
+};
+
 Country* create_country(const char *);
 void update_population(Country *, int);
 int isEqual_country(Country *, unsigned char *);
-void print_vaccination_ratios_byAge(Country *, int[]);
+void print_vaccination_ratios_byAge(Country *, struct vaccinationsAgeGroup *, struct vaccinationsAgeGroup *);
 void print_vaccination_ratio(Country *, struct vaccinations *, struct vaccinations *);
 void destroy_country(Country **);
 
