@@ -104,6 +104,11 @@ then
   exit 1
 fi
 
+if [[ "$4" -eq 0 && "$3" -gt 10000 ]]
+then
+  set -- "${@:1:2}" "10000" "${@:4}"
+fi
+
 mapfile -t viruses < $1
 mapfile -t countries < $2
 
@@ -119,6 +124,7 @@ maxage=120
 
 declare -A records
 declare -a ids
+declare -a remainingids
 recordsProduced=0
 # dupesRequired=$( echo "scale=3; $3*20/100" | bc )
 printf -v dupesRequired %.0f "$dupesRequired"
@@ -135,11 +141,33 @@ fi
 
 while [ "$recordsProduced" -lt "$3" ]
 do
-  # First, calculating ID if duplicatesNotAllowed or if duplicatesAllowed 
+  # if we are reaching the end of the count of the domain of possible generatable IDs
+  # we seek to find which ones have NOT been generated yet and choose from them.
+  # So, an array of the 1000 IDs not generated yet is created and each time from 
+  # now on, the id is chosen from the array. Could have been chosen again, but
+  # it is much quicker to pick another element from the array rather than just generating
+  # a number in the domain of applicable numbers again.
+  
+  if [[ "$4" -eq 0 && "$recordsProduced" -eq 9000 && ${#remainingids[@]} -eq 0 ]]
+  then
+    for((j = 0; j < 10000; j++))
+    do
+      if [[ ${ids[*]} =~ (^|[[:space:]])"$j"($|[[:space:]]) ]]
+      then
+        continue
+      else
+        remainingids+=($j)
+      fi      
+    done
+  fi
+  
+  # Now, actually calculating ID if duplicatesNotAllowed or if duplicatesAllowed 
   # and we haven't reached the point of duplicate production yet
-  #if [ "$4" -eq 0 ] || [[ "$4" -eq 1 && "$recordsProduced" -lt "$dupesRequired" ]]
+  
+  # if [ "$4" -eq 0 ] || [[ "$4" -eq 1 && "$recordsProduced" -lt "$dupesRequired" ]]
   # if [ "$4" -eq 0 ] || [ "$4" -eq 1 ]
-  # then
+  if [ "$4" -eq 1 ] || [[ "$4" -eq 0 && "$recordsProduced" -lt 9000 ]]
+  then
     idlength=$RANDOM
     idlength=$(( $idlength % ( $maxidlength - $minidlength + 1 ) + $minidlength ))
     
@@ -151,35 +179,40 @@ do
       id=$(( $id * 10 ))
       id=$(( $id + $digit ))
     done
-    
-    if [ "$4" -eq 0 ]
+  else
+    index=$RANDOM
+    index=$(( $index % 1000 ))
+    id=${remainingids[$index]}
+  fi
+
+  if [ "$4" -eq 0 ]
+  then
+    if [[ ${ids[*]} =~ (^|[[:space:]])"$id"($|[[:space:]]) ]]
     then
-      if [[ ${ids[*]} =~ $id ]]
-      then
-        continue
-      fi
+      continue
+    fi
+    record="$id "
+    generateRestOfRecord
+    record+="$restOfRecord"
+    ids+=($id)
+    records[$id]+=$record
+    generateVaccination
+    record+="$vac"
+  else
+    if [[ -v "records[$id]" ]]
+    then
+      # echo DUPLICATE.
+      record=${records[$id]}
+    else
       record="$id "
       generateRestOfRecord
       record+="$restOfRecord"
-      ids+=($id)
       records[$id]+=$record
-      generateVaccination
-      record+="$vac"
-    else
-      if [[ -v "records[$id]" ]]
-      then
-        # echo DUPLICATE.
-        record=${records[$id]}
-      else
-        record="$id "
-        generateRestOfRecord
-        record+="$restOfRecord"
-        records[$id]+=$record
-        ids+=($id)
-      fi
-      generateVaccination
-      record+="$vac"
+      ids+=($id)
     fi
+    generateVaccination
+    record+="$vac"
+  fi
   # else
     # # In this case, we have reached the last few (compared to file size lines)
     # # and here we will pick one id from the id array and generate another record
