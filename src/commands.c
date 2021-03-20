@@ -11,6 +11,10 @@
 
 void vaccineStatusBloom(hashMap *viruses, unsigned char *citizenID, unsigned char *virusName){
   Virus *v = (Virus *) find_node(viruses, virusName);
+  if(!v){
+    printf("NO VIRUS NAMED %s\n", virusName);
+    return;
+  }
   if(!lookup_in_virus_bloomFilter(v, citizenID)){
     printf("NOT VACCINATED\n");
   }else{
@@ -20,6 +24,10 @@ void vaccineStatusBloom(hashMap *viruses, unsigned char *citizenID, unsigned cha
 
 void vaccineStatus(hashMap *viruses, unsigned char *citizenID, unsigned char *virusName){
   Virus *v = (Virus *) find_node(viruses, virusName);
+  if(!v){
+    printf("NO VIRUS NAMED %s\n", virusName);
+    return;
+  }
   listNode *temp = lookup_in_virus_vaccinated_for_list(v, atoi(citizenID));
   if(temp == NULL){
     printf("NOT VACCINATED\n");
@@ -71,6 +79,7 @@ void insertCitizenRecord(hashMap *viruses, hashMap *countries, hashMap *citizens
     if(vacDate != NULL){
       printf("ERROR IN RECORD %s %s %s %s %s %s %s %s\n", citizenID, firstName, lastName, country, age, virusName, vacStatus, vacDate);
     }else{
+      // TODO: CHANGE THE ORDER AND HAVE ERROR MESSAGE IN CASE OF VACCINATED CITIZEN
       if(!lookup_in_virus_bloomFilter(temp_virus, citizenID)){
         insert_in_not_vaccinated_for_list(temp_virus, atoi(citizenID), temp_citizen);
       }else if(!lookup_in_virus_vaccinated_for_list(temp_virus, atoi(citizenID))){
