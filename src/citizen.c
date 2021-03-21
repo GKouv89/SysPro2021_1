@@ -25,6 +25,22 @@ int isEqual_citizen(Citizen *c, unsigned char *str){
   }
 }
 
+int compare_citizens(Citizen *c1, Citizen *c2){
+  if(strcmp(c1->firstName, c2->firstName) != 0){
+    return 0;
+  }
+  if(strcmp(c1->lastName, c2->lastName) != 0){
+    return 0;
+  }
+  if(c1->age != c2->age){
+    return 0;
+  }
+  if(c1->country != c2->country){
+    return 0;
+  }
+  return 1;
+}
+
 void print_citizen(Citizen *c){
   printf("%s %s %s %s %d\n", c->id, c->firstName, c->lastName, c->country->name, c->age);
 }

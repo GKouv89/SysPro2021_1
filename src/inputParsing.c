@@ -15,7 +15,7 @@ void inputFileParsing(hashMap *countries, hashMap *citizens, hashMap *viruses, F
   int found, erroneousRecord;
   Country *country;
   Virus *virus;
-  Citizen *citizen;
+  Citizen *citizen, *citizen_compare;
   listNode *possibleDupe;
   while(!feof(input)){
     erroneousRecord = 0;
@@ -52,6 +52,14 @@ void inputFileParsing(hashMap *countries, hashMap *citizens, hashMap *viruses, F
       if(citizen == NULL){
         citizen = create_citizen(id, firstName, lastName, atoi(age), country);
         insert(citizens, id, citizen);        
+      }else{
+        citizen_compare = create_citizen(id, firstName, lastName, atoi(age), country);
+        if(!compare_citizens(citizen, citizen_compare)){
+          printf("ERROR: CITIZEN %s already exists with different data\n", id);
+          destroy_citizen(&citizen_compare);
+          continue;
+        }
+        destroy_citizen(&citizen_compare);
       }
       virus = (Virus *) find_node(viruses, virus_name);
       if(virus == NULL){

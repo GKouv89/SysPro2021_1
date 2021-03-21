@@ -63,10 +63,18 @@ void insertCitizenRecord(hashMap *viruses, hashMap *countries, hashMap *citizens
     temp_country = create_country(country);
     insert(countries, country, temp_country);        
   }
-  Citizen *temp_citizen = (Citizen *) find_node(citizens, citizenID);
+  Citizen *citizen_compare, *temp_citizen = (Citizen *) find_node(citizens, citizenID);
   if(temp_citizen == NULL){
     temp_citizen = create_citizen(citizenID, firstName, lastName, atoi(age), temp_country);
     insert(citizens, citizenID, temp_citizen);        
+  }else{
+    citizen_compare = create_citizen(citizenID, firstName, lastName, atoi(age), temp_country);
+    if(!compare_citizens(temp_citizen, citizen_compare)){
+      printf("ERROR: CITIZEN %s already exists with different data\n", citizenID);
+      destroy_citizen(&citizen_compare);
+      return;
+    }
+    destroy_citizen(&citizen_compare);
   }
   Virus *temp_virus = (Virus *) find_node(viruses, virusName);
   if(temp_virus == NULL){
@@ -82,7 +90,7 @@ void insertCitizenRecord(hashMap *viruses, hashMap *countries, hashMap *citizens
       // TODO: CHANGE THE ORDER AND HAVE ERROR MESSAGE IN CASE OF VACCINATED CITIZEN
       if(!lookup_in_virus_bloomFilter(temp_virus, citizenID)){
         insert_in_not_vaccinated_for_list(temp_virus, atoi(citizenID), temp_citizen);
-      }else if(!lookup_in_virus_vaccinated_for_list(temp_virus, atoi(citizenID))){
+      }else if(lookup_in_virus_vaccinated_for_list(temp_virus, atoi(citizenID))){
         insert_in_not_vaccinated_for_list(temp_virus, atoi(citizenID), temp_citizen);
       }
     }

@@ -128,9 +128,18 @@ int main(int argc, char *argv[]){
           insert(country_map, country, temp_country);        
         }
         temp_citizen = (Citizen *) find_node(citizen_map, citizenID);
+        Citizen *citizen_compare;
         if(temp_citizen == NULL){
           temp_citizen = create_citizen(citizenID, firstName, lastName, age, temp_country);
           insert(citizen_map, citizenID, temp_citizen);        
+        }else{
+          citizen_compare = create_citizen(citizenID, firstName, lastName, age, temp_country);
+          if(!compare_citizens(temp_citizen, citizen_compare)){
+            printf("ERROR: CITIZEN %s already exists with different data\n", citizenID);
+            destroy_citizen(&citizen_compare);
+            continue;
+          }
+          destroy_citizen(&citizen_compare);
         }
         temp_virus = (Virus *) find_node(virus_map, virusName);
         if(temp_virus == NULL){
