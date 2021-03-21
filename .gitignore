@@ -1,15 +1,21 @@
-# Entire Folders 
-build
-testbuild
-testing.txt 
+# Tests
+dateValidityTest.c
+testing.txt
 inputFile.txt
+inputFileUniLinuxNoDupe10k.txt
+test
+
+# Random files (debugging output, notepad++ sessions, etc.) 
 appSession
 massif.out.*
+"Σχεδιαστικές Αποφάσεις.txt"
 
 # Prerequisites
 *.d
 
 # Object files
+build
+testbuild
 *.o
 *.ko
 *.obj
@@ -37,6 +43,7 @@ massif.out.*
 *.dylib
 
 # Executables
+vaccineMonitor
 *.exe
 *.out
 *.app

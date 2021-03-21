@@ -8,28 +8,11 @@ OBJ = build/inputParsing.o build/commands.o $(FILE_PARSING) $(DATE_OPS) $(SKIPL)
 
 all: vaccineMonitor
 
-tests: testSkipLists testBloomFilter testFileParsing
-
 build/%.o: src/%.c
 	gcc $(FLAGS) $< -o $@
 
 vaccineMonitor: build/vaccineMonitor.o $(OBJ)
-	gcc -o build/$@ $^ $(LINK)
-
-testbuild/%.o: test/%.c
-	gcc $(FLAGS) $< -o $@
-
-testDates: testbuild/testDates.o $(DATE_OPS)
-	gcc -o testbuild/$@ $^ $(LINK)
-
-testSkipLists: testbuild/testSkipLists.o $(SKIPL)
-	gcc -o testbuild/testSkipLists $< $(SKIPL) $(LINK)
-
-testBloomFilter: testbuild/testBloomFilter.o $(BF)
-	gcc -o testbuild/testBloomFilter $< $(BF) -DK=2
-
-testFileParsing: testbuild/testFileParsing.o $(FILE_PARSING) $(BF) $(SKIPL)
-	gcc -o testbuild/$@ $^ $(LINK)
+	gcc -o $@ $^ $(LINK)
 
 clean:
-	rm -f testbuild/* build/*
+	rm -f vaccineMonitor build/*
