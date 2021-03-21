@@ -88,10 +88,13 @@ void insertCitizenRecord(hashMap *viruses, hashMap *countries, hashMap *citizens
       printf("ERROR IN RECORD %s %s %s %s %s %s %s %s\n", citizenID, firstName, lastName, country, age, virusName, vacStatus, vacDate);
     }else{
       // TODO: CHANGE THE ORDER AND HAVE ERROR MESSAGE IN CASE OF VACCINATED CITIZEN
+      listNode *temp;
       if(!lookup_in_virus_bloomFilter(temp_virus, citizenID)){
         insert_in_not_vaccinated_for_list(temp_virus, atoi(citizenID), temp_citizen);
-      }else if(!lookup_in_virus_vaccinated_for_list(temp_virus, atoi(citizenID))){
+      }else if((temp = lookup_in_virus_vaccinated_for_list(temp_virus, atoi(citizenID))) == NULL){
         insert_in_not_vaccinated_for_list(temp_virus, atoi(citizenID), temp_citizen);
+      }else{
+        printf("ERROR: CITIZEN ALREADY VACCINATED ON %s\n", temp->vaccinationDate);
       }
     }
   }else{
