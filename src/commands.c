@@ -90,7 +90,7 @@ void insertCitizenRecord(hashMap *viruses, hashMap *countries, hashMap *citizens
       // TODO: CHANGE THE ORDER AND HAVE ERROR MESSAGE IN CASE OF VACCINATED CITIZEN
       if(!lookup_in_virus_bloomFilter(temp_virus, citizenID)){
         insert_in_not_vaccinated_for_list(temp_virus, atoi(citizenID), temp_citizen);
-      }else if(lookup_in_virus_vaccinated_for_list(temp_virus, atoi(citizenID))){
+      }else if(!lookup_in_virus_vaccinated_for_list(temp_virus, atoi(citizenID))){
         insert_in_not_vaccinated_for_list(temp_virus, atoi(citizenID), temp_citizen);
       }
     }
