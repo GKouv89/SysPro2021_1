@@ -5,8 +5,6 @@
 
 #include "../include/dateOps.h"
 
-// #define DEBUG
-
 void dateValidity(char *date1, char *date2){
   if(!dateFormatValidity(date1) && !dateFormatValidity(date2)){
     if(dateComparison(date1, date2)){
@@ -69,9 +67,6 @@ int dateComparison(char *date1, char *date2){
   char *tempdate2 = malloc(12*sizeof(char));
   strcpy(tempdate1, date1);
   strcpy(tempdate2, date2);
-  #ifdef DEBUG
-  printf("date1: %s date2: %s\n", tempdate1, tempdate2);
-  #endif
   char *rest1, *rest2;
   char *day1 = strtok_r(tempdate1, "-", &rest1);
   char *month1 = strtok_r(NULL, "-", &rest1);
@@ -88,30 +83,18 @@ int dateComparison(char *date1, char *date2){
   d2 = strtol(day2, &endptr, 10);
   d1 = strtol(day1, &endptr, 10);
   if(y2 < y1){
-    #ifdef DEBUG
-    printf("y2: %ld y1: %ld\n", y2, y1);
-    #endif
     free(tempdate1);
     free(tempdate2);
     return -1;
   }else if(y2 == y1 && m2 < m1){
-    #ifdef DEBUG
-    printf("m2: %ld m1: %ld\n", m2, m1);
-    #endif
     free(tempdate1);
     free(tempdate2);
     return -1;
   }else if(y2 == y1 && m2 == m1 && d2 < d1){
-    #ifdef DEBUG
-    printf("d2: %ld d1: %ld\n", d2, d1);
-    #endif
     free(tempdate1);
     free(tempdate2);
     return -1;
   }
-  #ifdef DEBUG
-  printf("ALL OK\n");
-  #endif
   free(tempdate1);
   free(tempdate2);
   return 0;

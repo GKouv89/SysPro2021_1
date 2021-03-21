@@ -11,11 +11,6 @@ void create_list(list ** l){
 
 listNode* insert_node(list *l, listNode *startingNode, int id, char *vacDate, Citizen *c){
   listNode *temp = startingNode;
-  #ifdef DEBUG
-  if(startingNode != NULL){
-    printf("startingNode: %d\n", startingNode->id);
-  }
-  #endif
   listNode *newNode = malloc(sizeof(listNode));
   newNode->id = id;
   if(vacDate != NULL){
@@ -28,17 +23,11 @@ listNode* insert_node(list *l, listNode *startingNode, int id, char *vacDate, Ci
   newNode->bottom = NULL; // THIS MUST CHANGE
   // First case: list is empty
   if(l->front == NULL && l->rear == NULL){
-    #ifdef DEBUG
-    printf("INSERT 1ST CASE: %d\n", id);
-    #endif
     l->front = newNode;
     l->rear = newNode;
     newNode->next = newNode->prev = NULL;
   }else if(l->rear == startingNode){ // Second case: startingNode is the list's rear node
     // this means the new node will be the new rear
-    #ifdef DEBUG
-    printf("INSERT 2ND CASE: %d\n", id);
-    #endif
     newNode->prev = l->rear;
     newNode->next = NULL;
     l->rear->next = newNode;
@@ -46,17 +35,11 @@ listNode* insert_node(list *l, listNode *startingNode, int id, char *vacDate, Ci
   }else if(l->front != NULL && startingNode == NULL){ 
     // Third case: startingNode is NULL, meaning the new node has a value smaller than
     // the front node's value
-    #ifdef DEBUG
-    printf("INSERT 3RD CASE: %d\n", id);
-    #endif
     newNode->prev = NULL;
     newNode->next = l->front;
     l->front->prev  = newNode;
     l->front = newNode;
   }else{ //The node is somewhere in the middle
-    #ifdef DEBUG
-    printf("INSERT 4TH CASE: %d\n", id);
-    #endif
     while(temp != NULL){
       if(id == temp->id){
         // Node already exists
@@ -171,9 +154,6 @@ char* search(list *l, int id, listNode *startingNode, listNode *endingNode, boun
   // We also change the content of startingNode before we return
   // which will point to the node after which the new one should be inserted 
   if(startingNode == NULL && endingNode == NULL){
-    #ifdef DEBUG
-    printf("FIRST CASE: %d\n", id);
-    #endif
     // First case: list is empty (this happens at the very start of our skip list instance)
     (*new_bound)->start = (*new_bound)->end = NULL;
     *error = 0;
@@ -181,9 +161,6 @@ char* search(list *l, int id, listNode *startingNode, listNode *endingNode, boun
     *futureSN = NULL;
     return NULL;
   }else if(startingNode == NULL && endingNode != NULL){
-    #ifdef DEBUG
-    printf("SECOND CASE: %d\n", id);
-    #endif
     // Second case: list is non empty and because the id is smaller than
     // the above list's head's id, we must start from endingNode in the current list
     // and work backwards
@@ -211,13 +188,6 @@ char* search(list *l, int id, listNode *startingNode, listNode *endingNode, boun
         *futureSN = temp;
         (*new_bound)->start = temp->bottom;
         (*new_bound)->end = temp->next->bottom;
-        #ifdef DEBUG
-        if(*futureSN == NULL){
-          printf("futureSN is NULL\n");
-        }else{
-          printf("futureSN->id = %d\n", (*futureSN)->id);
-        }
-        #endif
         return NULL;
       }    
       temp = temp->prev;
@@ -228,18 +198,8 @@ char* search(list *l, int id, listNode *startingNode, listNode *endingNode, boun
     (*new_bound)->start = NULL;
     (*new_bound)->end = l->front->bottom;
     *error = 0;
-    #ifdef DEBUG
-    if(*futureSN == NULL){
-      printf("futureSN is NULL\n");
-    }else{
-      printf("futureSN->id = %d\n", (*futureSN)->id);
-    }
-    #endif
     return NULL;
   }else if(startingNode != NULL && endingNode == NULL){
-    #ifdef DEBUG
-    printf("THIRD CASE: %d\n", id);
-    #endif
     // Third case: we know the id is greater than a certain node,
     // but this node's id was the rear's id in the list above the current one
     temp = startingNode;
@@ -266,13 +226,6 @@ char* search(list *l, int id, listNode *startingNode, listNode *endingNode, boun
           (*new_bound)->start = NULL;
         }
         (*new_bound)->end = temp->bottom;
-        #ifdef DEBUG
-        if(*futureSN == NULL){
-          printf("futureSN is NULL\n");
-        }else{
-          printf("futureSN->id = %d\n", (*futureSN)->id);
-        }
-        #endif
         return NULL;
       }   
       temp = temp->next;
@@ -285,24 +238,11 @@ char* search(list *l, int id, listNode *startingNode, listNode *endingNode, boun
     (*new_bound)->start = l->rear->bottom;
     (*new_bound)->end = NULL;
     *error = 0;
-    #ifdef DEBUG
-    if(*futureSN == NULL){
-      printf("*futureSN is NULL\n");
-    }else{
-      printf("*futureSN->id = %d\n", (*futureSN)->id);
-    }
-    #endif
     return NULL;
   }else if(startingNode == endingNode){
-    #ifdef DEBUG
-    printf("FOURTH CASE: %d\n", id);
-    #endif
     // Fourth case: list has only one member
     temp = startingNode;
     if(id < temp->id){
-      #ifdef DEBUG
-      printf("CASE 4.1 \n");
-      #endif
       (*new_bound)->start = NULL;
       (*new_bound)->end = l->front->bottom;
       *futureSN = NULL; // this corresponds to line 27
@@ -321,26 +261,13 @@ char* search(list *l, int id, listNode *startingNode, listNode *endingNode, boun
         return temp_bottom->vaccinationDate;        
       }
     }else{
-      #ifdef DEBUG
-      printf("CASE 4.2\n");
-      #endif
       *error = 0;
       *futureSN = l->rear;
       (*new_bound)->start = l->rear->bottom;
       (*new_bound)->end = NULL;
     }
-    #ifdef DEBUG
-    if(*futureSN == NULL){
-      printf("*futureSN is NULL\n");
-    }else{
-      printf("*futureSN->id = %d\n", (*futureSN)->id);
-    }
-    #endif
     return NULL;
   }else{
-    #ifdef DEBUG
-    printf("FIFTH CASE: %d\n", id);
-    #endif
     temp = startingNode;
     // Fifth case: multiple members, and strict bounds on both sides.
     while(temp != endingNode->next){
@@ -366,13 +293,6 @@ char* search(list *l, int id, listNode *startingNode, listNode *endingNode, boun
           (*new_bound)->start = NULL;
         }
         (*new_bound)->end = temp->bottom;
-        #ifdef DEBUG
-        if(*futureSN == NULL){
-          printf("*futureSN is NULL\n");
-        }else{
-          printf("*futureSN->id = %d\n", (*futureSN)->id);
-        }
-        #endif
         return NULL;
       }    
       temp = temp->next;
@@ -384,13 +304,6 @@ char* search(list *l, int id, listNode *startingNode, listNode *endingNode, boun
     *futureSN = l->rear;
     (*new_bound)->start = l->rear->bottom;
     (*new_bound)->end = NULL;
-    #ifdef DEBUG
-    if(*futureSN == NULL){
-      printf("*futureSN is NULL\n");
-    }else{
-      printf("*futureSN->id = %d\n", (*futureSN)->id);
-    }
-    #endif
     return NULL;    
   }
 }

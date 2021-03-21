@@ -19,5 +19,4 @@ void* find_node(hashMap*, unsigned char*);
 void lookup_vacStatus_all(hashMap *, unsigned char *);
 void lookup_popStatus_all(hashMap *map, int, Virus *, char *, char *);
 void destroy_map(hashMap**);
-// void print_bucket_no_of_entries(hashMap*);
 #endif

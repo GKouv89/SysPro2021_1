@@ -32,9 +32,6 @@ char* insert_skipnode(skipList *s, int id, char *vacDate, Citizen *c){
     idHeight++;
   }
   if(idHeight > s->height){
-    #ifdef DEBUG
-    printf("TALLER TALLER\n");
-    #endif
     list **temp = realloc(s->levels, idHeight*sizeof(*(s->levels)));
     assert(temp != NULL);
     s->levels = temp;
@@ -52,25 +49,12 @@ char* insert_skipnode(skipList *s, int id, char *vacDate, Citizen *c){
   // with the corresponding one in the list right above that
   listNode *currConnection;
   
-  #ifdef DEBUG
-  printf("BEFORE INSERTION, STARTINGNODES\n");
-  for(int i = 0; i < s->height; i++){
-    if(startingNodes[i] != NULL){
-      printf("IN SEARCH_SKIP, startingNodes[%d]->id = %d\n", i, startingNodes[i]->id);
-    }else{
-      printf("IN SEARCH_SKIP, startingNodes is NULL\n");
-    }
-  }
-  #endif
   for(int i = 0; i < s->height ;i++){
     if(i == 0){
       currConnection = insert_node(s->levels[i], startingNodes[i], id, vacDate, c);
     }else{
       currConnection = insert_node(s->levels[i], startingNodes[i], id, NULL, NULL);
     }
-    #ifdef DEBUG
-    printf("TEST: currConnection->id = %d\n", currConnection->id);
-    #endif
     currConnection->bottom = prevConnection;
     prevConnection = currConnection;
     startingNodes[i] = NULL;
@@ -87,9 +71,6 @@ char* search_skip(skipList *s, int id, listNode *startingNodes[], int *error){
   listNode *futureSN;
   char *dupeVaccinationDate;
   for(int i = s->height - 1; i >= 0; i--){
-    #ifdef DEBUG
-    printf("HEIGHT: %d\n", i);
-    #endif
     dupeVaccinationDate = search(s->levels[i], id, bounds_arg->start, bounds_arg->end, &bounds_ret, error, &futureSN);
     if(*error == 1){ // Element already in skiplist
       startingNodes[i] = NULL;// WIP: what do we insert in startingNodes?
@@ -98,13 +79,6 @@ char* search_skip(skipList *s, int id, listNode *startingNodes[], int *error){
       return dupeVaccinationDate;
     }
     startingNodes[i] = futureSN;
-    #ifdef DEBUG
-    if(startingNodes[i] != NULL){
-      printf("IN SEARCH_SKIP, startingNodes[%d]->id = %d\n", i, startingNodes[i]->id);
-    }else{
-      printf("IN SEARCH_SKIP, startingNodes[%d] is NULL\n", i);
-    }
-    #endif
     // For insertion, for all lists except the bottom one,
     // the startingNode will be the node right after which the new one will be inserted
     // This is also the reason for which in insertion, we only require a starting node
@@ -201,9 +175,6 @@ void incrementAgeGroup(int age, struct vaccinationsAgeGroup** vacs, int mode){
 
 void* skiplist_vac_status_country(skipList *s, int vacMode, int ageMode, Country *country, char *date1, char *date2){
   listNode *bottomList = s->levels[0]->front;
-  #ifdef DEBUG
-  print_skiplist_citizens(s);
-  #endif
   void *vacs;
   if(ageMode == 0){
     vacs = malloc(sizeof(struct vaccinations));
@@ -217,9 +188,6 @@ void* skiplist_vac_status_country(skipList *s, int vacMode, int ageMode, Country
     }
   }
   while(bottomList){
-    #ifdef DEBUG
-    printf("startingDate: %s\tendingDate: %s\tvaccinationDate: %s\n", date1, date2, bottomList->vaccinationDate);
-    #endif
     if(isEqual_country(bottomList->citizen->country, country->name)){
       if(vacMode == 1){
         if(dateComparison(date1, bottomList->vaccinationDate) || dateComparison(bottomList->vaccinationDate, date2)){

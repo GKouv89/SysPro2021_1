@@ -1,7 +1,6 @@
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
 
-// #define DEBUG
 #include "citizen.h"
 
 typedef struct linkedlistnode{

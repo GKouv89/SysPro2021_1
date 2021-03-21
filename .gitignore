@@ -9,6 +9,7 @@ test
 appSession
 massif.out.*
 "Σχεδιαστικές Αποφάσεις.txt"
+h39jdk2.c
 
 # Prerequisites
 *.d

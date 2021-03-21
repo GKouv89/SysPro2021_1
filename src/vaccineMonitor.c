@@ -190,21 +190,6 @@ int main(int argc, char *argv[]){
     printf("\n");
   }
   
-  
-  ////////////////////////////////////////////////////////
-  // Here, the assertion will take place through prints //
-  ////////////////////////////////////////////////////////
-  // for(int i = 0; i < country_map->noOfBuckets; i++){
-    // bucketNode *temp = country_map->map[i]->bl->front;
-    // while(temp){
-      // printf("%s has a population of %d in the 0-20 age group.\n", ((Country *)temp->content)->name, ((Country *)temp->content)->popByAgeGroup[0]);
-      // printf("%s has a population of %d in the 21-40 age group.\n", ((Country *)temp->content)->name, ((Country *)temp->content)->popByAgeGroup[1]);
-      // printf("%s has a population of %d in the 41-60 age group.\n", ((Country *)temp->content)->name, ((Country *)temp->content)->popByAgeGroup[2]);
-      // printf("%s has a population of %d in the 60+ age group.\n", ((Country *)temp->content)->name, ((Country *)temp->content)->popByAgeGroup[3]);
-      // temp = temp->next;
-    // }
-  // }
-  
   destroy_map(&citizen_map);
   destroy_map(&virus_map);
   destroy_map(&country_map);
