@@ -36,6 +36,11 @@ void vaccineStatus(hashMap *viruses, unsigned char *citizenID, unsigned char *vi
   }
 }
 
+////////////////////////////////////////////////////////////////
+// The command that is called when vaccineStatus is called but//
+// without specifying a virus                                 //
+////////////////////////////////////////////////////////////////
+
 void vaccineStatusAll(hashMap *viruses, unsigned char *citizenID){
   lookup_vacStatus_all(viruses, citizenID);
 }
@@ -67,7 +72,9 @@ void insertCitizenRecord(hashMap *viruses, hashMap *countries, hashMap *citizens
   if(temp_citizen == NULL){
     temp_citizen = create_citizen(citizenID, firstName, lastName, atoi(age), temp_country);
     insert(citizens, citizenID, temp_citizen);        
-  }else{
+  }else{ // Making sure, that if citizen with specified ID already exists in hashmap,
+        // their first name, last name, age and country match
+        // If not, operation is aborted.
     citizen_compare = create_citizen(citizenID, firstName, lastName, atoi(age), temp_country);
     if(!compare_citizens(temp_citizen, citizen_compare)){
       printf("ERROR: CITIZEN %s already exists with different data\n", citizenID);
@@ -84,20 +91,28 @@ void insertCitizenRecord(hashMap *viruses, hashMap *countries, hashMap *citizens
   char *vacStatus = strtok_r(NULL, " ", &rest);
   char *vacDate = strtok_r(NULL, " ", &rest);
   if(strstr(vacStatus, "NO")){
-    if(vacDate != NULL){
+    if(vacDate != NULL){ // Records with NO should not be followed by a vaccination date.
       printf("ERROR IN RECORD %s %s %s %s %s %s %s %s\n", citizenID, firstName, lastName, country, age, virusName, vacStatus, vacDate);
     }else{
-      // TODO: CHANGE THE ORDER AND HAVE ERROR MESSAGE IN CASE OF VACCINATED CITIZEN
       listNode *temp;
       if(!lookup_in_virus_bloomFilter(temp_virus, citizenID)){
+        // If we get a definite no from the bloom filter,
+        // we can insert the citizen in the appropriate skiplist, as they haven't been already vaccinated.
         insert_in_not_vaccinated_for_list(temp_virus, atoi(citizenID), temp_citizen);
       }else if((temp = lookup_in_virus_vaccinated_for_list(temp_virus, atoi(citizenID))) == NULL){
+        // If we get a maybe from the bloom filter, 
+        // we must make sure they haven't been inserted in the virus' other skiplist,
+        // the one for the vaccinated people.
         insert_in_not_vaccinated_for_list(temp_virus, atoi(citizenID), temp_citizen);
       }else{
+        // Error in case they are found in the vaccinated_for list of the virus
         printf("ERROR: CITIZEN ALREADY VACCINATED ON %s\n", temp->vaccinationDate);
       }
     }
   }else{
+    // We are potentially about to perform a vaccination of a citizen that perhaps is registered
+    // as strictly not vaccinated, so we must make sure we remove said entry, if it exists, 
+    // from the virus' vaccinated for skiplist.
     char *dateToken = strtok(vacDate, "\n");
     listNode *temp = lookup_in_virus_not_vaccinated_for_list(temp_virus, atoi(citizenID));
     if(temp != NULL){
@@ -106,6 +121,7 @@ void insertCitizenRecord(hashMap *viruses, hashMap *countries, hashMap *citizens
       insert_in_vaccinated_for_list(temp_virus, atoi(citizenID), dateToken, temp_citizen);
       return;
     }  
+    // We then make sure they haven't been already vaccinated
     temp = lookup_in_virus_vaccinated_for_list(temp_virus, atoi(citizenID));
     if(temp != NULL){
       printf("ERROR: CITIZEN ALREADY VACCINATED ON %s\n", temp->vaccinationDate);
@@ -115,6 +131,11 @@ void insertCitizenRecord(hashMap *viruses, hashMap *countries, hashMap *citizens
     insert_in_vaccinated_for_list(temp_virus, atoi(citizenID), dateToken, temp_citizen);
   }
 }
+
+/////////////////////////////////////////////////////////////////////////
+// Lists all people that are in the virus' NOT-vaccinated-for skiplist //
+// not all citizens that happen to not be in the vaccinated-for one.   //
+/////////////////////////////////////////////////////////////////////////
 
 void list_non_vaccinated_persons(hashMap *viruses, unsigned char *virusName){
   Virus *v = (Virus *) find_node(viruses, virusName);
@@ -131,6 +152,8 @@ void popStatusByAge(hashMap *viruses, hashMap *countries, unsigned char *country
     printf("ERROR: NO SUCH VIRUS EXISTS\n");
     return;
   }
+  // Has there been a country specified? 
+  // If not, the operation is called for all of the hashmap's nodes. 
   if(country_name == NULL){
     lookup_popStatus_all(countries, 1, v, startDate, endDate);
   }else{
@@ -139,6 +162,12 @@ void popStatusByAge(hashMap *viruses, hashMap *countries, unsigned char *country
       printf("ERROR: NO SUCH COUNTRY\n");
       return;
     }
+    // vacced contains the people vaccinated for the virus from this country
+    // whose vaccination date is in the range of the two date arguments,
+    // AND the amount of people vaccinated for the virus from this country
+    // OVERALL. Both amounts are seperated into the four specified age ranges.
+    // notVacced contains the latter amount for the non vaccinated,
+    // respectively.
     struct vaccinationsAgeGroup *vacced = (struct vaccinationsAgeGroup *) skiplist_vac_status_country(v->vaccinated_for, 1, 1, c, startDate, endDate);
     struct vaccinationsAgeGroup *notVacced = (struct vaccinationsAgeGroup *) skiplist_vac_status_country(v->not_vaccinated_for, 0, 1, c, startDate, endDate);
     print_vaccination_ratios_byAge(c, vacced, notVacced);
@@ -151,6 +180,8 @@ void popStatus(hashMap *viruses, hashMap *countries, unsigned char *country_name
     printf("ERROR: NO SUCH VIRUS EXISTS\n");
     return;
   }
+  // Has there been a country specified? 
+  // If not, the operation is called for all of the hashmap's nodes. 
   if(country_name == NULL){
     lookup_popStatus_all(countries, 0, v, startDate, endDate);
   }else{
@@ -159,6 +190,11 @@ void popStatus(hashMap *viruses, hashMap *countries, unsigned char *country_name
       printf("ERROR: NO SUCH COUNTRY\n");
       return;
     }
+    // vacced contains the people vaccinated for the virus from this country
+    // whose vaccination date is in the range of the two date arguments,
+    // AND the amount of people vaccinated for the virus from this country
+    // OVERALL. notVacced contains the latter amount for the non vaccinated,
+    // respectively.
     struct vaccinations *vacced = (struct vaccinations *) skiplist_vac_status_country(v->vaccinated_for, 1, 0, c, startDate, endDate);
     struct vaccinations *notVacced = (struct vaccinations *) skiplist_vac_status_country(v->not_vaccinated_for, 0, 0, c, startDate, endDate);
     print_vaccination_ratio(c, vacced, notVacced);

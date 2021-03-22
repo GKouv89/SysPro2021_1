@@ -15,6 +15,12 @@ void dateValidity(char *date1, char *date2){
   }
 }
 
+///////////////////////////////////////////////////////
+// This function asserts that the dates given        //
+// in popStatus and popStatusByAge are in the format //
+// DD-MM-YYYY.                                       //
+///////////////////////////////////////////////////////
+
 int dateFormatValidity(char *date){
   char *tempdate = malloc(11*sizeof(char));
   strcpy(tempdate, date);
@@ -62,6 +68,12 @@ int dateFormatValidity(char *date){
   return 0;
 }
 
+/////////////////////////////////////////////////////////
+// This function makes sure that the date arguments    //
+// given in popStatus and popStatusByAge are           //
+// in correct chronological order, i.e. the first date //
+// is not later than the second one.                   //
+/////////////////////////////////////////////////////////
 int dateComparison(char *date1, char *date2){
   char *tempdate1 = malloc(11*sizeof(char));
   char *tempdate2 = malloc(12*sizeof(char));

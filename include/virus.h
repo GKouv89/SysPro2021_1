@@ -20,7 +20,6 @@ listNode *lookup_in_virus_not_vaccinated_for_list(Virus *, int);
 listNode *lookup_in_virus_vaccinated_for_list(Virus *, int);
 int lookup_in_virus_bloomFilter(Virus *, unsigned char *);
 int isEqual_virus(Virus *, unsigned char *);
-void print_virus_skiplists(Virus *);
 void print_non_vaccinated_for(Virus *);
 void destroy_virus(Virus **);
 

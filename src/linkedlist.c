@@ -10,6 +10,8 @@ void create_list(list ** l){
 }
 
 listNode* insert_node(list *l, listNode *startingNode, int id, char *vacDate, Citizen *c){
+  // startingNode indicates the position in the list in which we will insert the node
+  // we have located this node in our descent through the skiplist levels in skiplist search.
   listNode *temp = startingNode;
   listNode *newNode = malloc(sizeof(listNode));
   newNode->id = id;
@@ -20,7 +22,7 @@ listNode* insert_node(list *l, listNode *startingNode, int id, char *vacDate, Ci
     newNode->vaccinationDate = NULL;
   }
   newNode->citizen = c;
-  newNode->bottom = NULL; // THIS MUST CHANGE
+  newNode->bottom = NULL; 
   // First case: list is empty
   if(l->front == NULL && l->rear == NULL){
     l->front = newNode;
@@ -147,10 +149,26 @@ listNode* delete_node(list *l, int mode, int id, listNode *located){
   return to_ret;
 }
 
+
+//////////////////////////////////////////////////////////////////////////////
+// This function will be called by both skiplist search and skiplist lookup //
+// The search will occur only between startingNode and endingNode, i.e.     //
+// in the immediately higher level to the current one, the value of the id  //
+// was between two nodes with the values of startingNode and endingNode.    //
+// These two nodes pointed to the current startingNode and endingNode       //
+// through their bottom field. In new bound, we will store similar values   //
+// to be used in the next level's search.                                   //
+// In futureSN (futureStartNode), we track the node in this list whose      //
+// value is the largest one to be smaller than the id. After this node      //
+// the new one will be inserted if the new node will reach the height of    //
+// the current level. futureStartNode is ignored from the skiplist lookup   //
+// function.                                                                //
+//////////////////////////////////////////////////////////////////////////////
+
 char* search(list *l, int id, listNode *startingNode, listNode *endingNode, boundaries **new_bound, int *error, listNode **futureSN){
   listNode *temp, *temp_bottom;  
   //In all cases, we return:
-  // A pair of boundaries that will act as guidelines for search on the bottom list
+  // A pair of boundaries that will act as guidelines for search on the next, lower, level
   // We also change the content of startingNode before we return
   // which will point to the node after which the new one should be inserted 
   if(startingNode == NULL && endingNode == NULL){

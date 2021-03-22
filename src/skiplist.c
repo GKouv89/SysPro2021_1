@@ -9,7 +9,6 @@
 void create_skiplist(skipList **s, unsigned long long exp_data_count){
   (*s) = malloc(sizeof(skipList));
   (*s)->height = 1; 
-  // (*s)->max_height = log10(exp_data_count)/log10(2);
   (*s)->max_height = log2(exp_data_count);
   (*s)->levels = malloc(sizeof(*((*s)->levels)));
   create_list(&((*s)->levels[0]));
@@ -17,9 +16,13 @@ void create_skiplist(skipList **s, unsigned long long exp_data_count){
 
 char* insert_skipnode(skipList *s, int id, char *vacDate, Citizen *c){
   listNode **startingNodes = malloc(s->height*sizeof(listNode *));
-  // we will have all the nodes where we went a level lower
-  // therefore the boundaries for the insertion into that height's list
-  // if the new node will reach that height
+  // As we are about to descend into the skiplist's levels,
+  // we take note of the point in the list where the value of id
+  // became greater than the value of the list node, and therefore where
+  // we will move to the next, lower, level.
+  // This way, when we decide in how many levels the current id will
+  // be inserted into, we will know for each level after which node
+  // we should insert the new one.
   int error = 0;
   char *dupeVaccinationDate = search_skip(s, id, startingNodes, &error);
   if(error == 1){
@@ -32,9 +35,13 @@ char* insert_skipnode(skipList *s, int id, char *vacDate, Citizen *c){
     idHeight++;
   }
   if(idHeight > s->height){
+    // The skiplist grew, new level(s) will be created.
     list **temp = realloc(s->levels, idHeight*sizeof(*(s->levels)));
     assert(temp != NULL);
     s->levels = temp;
+    // Since new level(s) will be added, we also take note of where
+    // the new node will be inserted into these lists: NULL means at the
+    // very start.
     listNode **temp2 = realloc(startingNodes, idHeight*sizeof(listNode *));
     assert(temp2 != NULL);
     startingNodes = temp2;
@@ -45,7 +52,8 @@ char* insert_skipnode(skipList *s, int id, char *vacDate, Citizen *c){
     }
     s->height = idHeight;
   }
-  listNode *prevConnection = NULL; // this will connect the node of a list
+  listNode *prevConnection = NULL; 
+  // this will connect the node of a list
   // with the corresponding one in the list right above that
   listNode *currConnection;
   
@@ -66,6 +74,16 @@ char* insert_skipnode(skipList *s, int id, char *vacDate, Citizen *c){
 char* search_skip(skipList *s, int id, listNode *startingNodes[], int *error){
   boundaries *bounds_ret = malloc(sizeof(boundaries));
   boundaries *bounds_arg = malloc(sizeof(boundaries));
+  // Bounds_arg the nodes between which we will be searching in that specific level
+  // For the top level, the entire list is searched.
+  // When two nodes whose values are such that first_node_id < id < second_node_id,
+  // the search on the next level must take place between the nodes that are 'directly underneath'
+  // these two nodes, and so, bounds_ret contains the bottom field of these two nodes.
+  // Now, if the id is smaller than the id of the first node in the list/level,
+  // then bounds_ret->start will be NULL and bounds_ret->end will be the bottom field of the list's first node.
+  // Respectively, if the id is greater than the id of the last node in the list/level,
+  // then bounds_ret->start will be the bottom field of the list's last node and bounds_end->end will be NULL,
+  // which means in the next level the search will occur from bounds_ret->start and forward.
   bounds_arg->start = s->levels[s->height - 1]->front;
   bounds_arg->end = s->levels[s->height - 1]->rear;
   listNode *futureSN;
@@ -78,11 +96,10 @@ char* search_skip(skipList *s, int id, listNode *startingNodes[], int *error){
       free(bounds_arg);
       return dupeVaccinationDate;
     }
-    startingNodes[i] = futureSN;
+    startingNodes[i] = futureSN; // Keeping track of where the new node will potentially be inserted, if 
+    // the node's height reaches the current level.
     // For insertion, for all lists except the bottom one,
     // the startingNode will be the node right after which the new one will be inserted
-    // This is also the reason for which in insertion, we only require a starting node
-    // We have modified the value of bounds_arg->start in the search function
     bounds_arg->start = bounds_ret->start;
     bounds_arg->end = bounds_ret->end;
   }
@@ -94,7 +111,7 @@ char* search_skip(skipList *s, int id, listNode *startingNodes[], int *error){
 ///////////////////////////////////////////////////////////////////////////////////////
 // Search is used to locate where a node will be placed after insertion in a list    //
 // Lookup on the other hand is used to locate whether a node is in the skiplist and, //
-// if so, info on that citizen's vaccination state                                   //
+// if so, provide info on that citizen's vaccination state                           //
 ///////////////////////////////////////////////////////////////////////////////////////
 
 listNode* lookup_skiplist(skipList *s, int id){
@@ -114,6 +131,9 @@ listNode* lookup_skiplist(skipList *s, int id){
     bounds_arg->end = bounds_ret->end;
   }
   listNode *infoNode;
+  // if the id was found in one of the list's upper levels (any level that is not the bottom one)
+  // the bottom pointers to the bottom list are followed (cascade function), 
+  // where the vaccinattionDate is included. 
   if(found){
     infoNode = cascade(bounds_ret->start);
     free(bounds_arg);
@@ -174,6 +194,11 @@ void incrementAgeGroup(int age, struct vaccinationsAgeGroup** vacs, int mode){
 }
 
 void* skiplist_vac_status_country(skipList *s, int vacMode, int ageMode, Country *country, char *date1, char *date2){
+  // Traversing the bottom list of a skiplist and counting how many citizens come from a specific country.
+  // vacMode indicates whether it is a list containing vaccinated or not vaccinated people being traversed. 
+  // ageMode indicates whether the counting will be recorded seperately in age groups or cumulatively.
+  // If it is a vaccinated persons' list, then seperate counting for people vaccinated between date1 and date2 
+  // also takes place.
   listNode *bottomList = s->levels[0]->front;
   void *vacs;
   if(ageMode == 0){

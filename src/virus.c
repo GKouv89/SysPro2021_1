@@ -42,13 +42,6 @@ listNode *lookup_in_virus_vaccinated_for_list(Virus *v, int citizenID){
   return lookup_skiplist(v->vaccinated_for, citizenID);
 }
 
-void print_virus_skiplists(Virus *v){
-  printf("Not vaccinated for %s:\n", v->name);
-  print_skiplist(v->not_vaccinated_for);
-  printf("Vaccinated for %s:\n", v->name);
-  print_skiplist(v->vaccinated_for);
-}
-
 void print_non_vaccinated_for(Virus *v){
   print_skiplist_citizens(v->not_vaccinated_for);
 }

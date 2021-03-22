@@ -122,8 +122,15 @@ characters=ABCDEFGHIJKLMNOPQRSTUVWXYZ
 minage=1
 maxage=120
 
+# When a record is generated for a specific ID, it is stored in this associative array.
+# In the version with duplicates, the moment the ID is generated and found in the indices of the array,
+# the record is ready to be printed.
 declare -A records
+# Used for the version without duplicates. If a generated ID is in this array, no record is generated, we
+# skip to id generation again.
 declare -a ids
+# Used for the version without duplicates. After 9000 records, the remaining 1000 that have not been generated
+# are found and stored here, and the ID is chosen from these from that point forward.
 declare -a remainingids
 recordsProduced=0
 # dupesRequired=$( echo "scale=3; $3*20/100" | bc )

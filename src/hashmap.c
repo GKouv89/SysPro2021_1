@@ -28,11 +28,25 @@ void* find_node(hashMap *map, unsigned char *key){
   search_bucketList(map->map[hash]->bl, key);
 }
 
+/////////////////////////////////////////////////////////////////
+// This function is called only with the viruses hashmap       //
+// for the first argument. Basically searches for each element //
+// in each bucket, i.e. each virus, whether the citizen        //
+// has been vaccinated for it and if so, when.                 //
+/////////////////////////////////////////////////////////////////
+
 void lookup_vacStatus_all(hashMap *map, unsigned char *citizenID){
   for(int i = 0; i < map->noOfBuckets; i++){
     vacStatus_all(map->map[i]->bl, citizenID);
   }
 }
+
+/////////////////////////////////////////////////////////////////
+// This function is called only with the countries hashmap     //
+// for the first argument. Basically searched for each country //
+// and for one specific virus, how many citizens have been     //
+// vaccinated against the virus between the two argument dates //
+/////////////////////////////////////////////////////////////////
 
 void lookup_popStatus_all(hashMap *map, int mode, Virus *v, char *startingDate, char *endingDate){
   for(int i = 0; i < map->noOfBuckets; i++){

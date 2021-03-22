@@ -15,6 +15,7 @@
 
 int main(int argc, char *argv[]){
   srand(time(NULL));
+  // Just some argument checking: count, order.
   if(argc != 5){
     printf("Flags:\n");
     printf("-c file_name: records will be read from the file named file_name.\n");
@@ -45,6 +46,7 @@ int main(int argc, char *argv[]){
   FILE *recordsFile = fopen(fileName, "r");
   assert(recordsFile != NULL);
   
+  ///////////////////////////////////////////////////////////////
   hashMap *country_map, *virus_map, *citizen_map;
   // Prime bucket of numbers for all hashmaps
   // virusesFile has only about 12 viruses
@@ -58,6 +60,7 @@ int main(int argc, char *argv[]){
   create_map(&country_map, 43, Country_List);
   create_map(&virus_map, 3, Virus_List);
   create_map(&citizen_map, 101, Citizen_List);
+  ////////////////////////////////////////////////////////////////
   
   // Calculating current date, just in case it is necessary for vaccinateNow //
   time_t t = time(NULL);
@@ -112,8 +115,10 @@ int main(int argc, char *argv[]){
       }
     }else if(strcmp(comm_name, "/vaccineStatus") == 0){
       if(2 == sscanf(rest, "%s %s", citizenID, virusName)){
+        // Version of command that specifies virus
         vaccineStatus(virus_map, citizenID, virusName);
       }else if(1 == sscanf(rest, "%s", citizenID)){
+        // Version of command that doesn't specify virus
         vaccineStatusAll(virus_map, citizenID);
       }else{
         printf("Bad arguments to /vaccineStatus. Try again.\n");
@@ -133,6 +138,8 @@ int main(int argc, char *argv[]){
           temp_citizen = create_citizen(citizenID, firstName, lastName, age, temp_country);
           insert(citizen_map, citizenID, temp_citizen);        
         }else{
+          // If citizenID already exists in the respective hash table,
+          // we make sure the rest of the data also match (names, age, country)
           citizen_compare = create_citizen(citizenID, firstName, lastName, age, temp_country);
           if(!compare_citizens(temp_citizen, citizen_compare)){
             printf("ERROR: CITIZEN %s already exists with different data\n", citizenID);
@@ -161,10 +168,12 @@ int main(int argc, char *argv[]){
     }else if(strcmp(comm_name, "/popStatusByAge") == 0){
       // First, checking for argument count.
       if(sscanf(rest, "%s %s %s %s", country, virusName, date1, date2) == 4){
+        // Version that specifies country
         // checking for date validity
         dateValidity(date1, date2);
         popStatusByAge(virus_map, country_map, country, virusName, date1, date2);
       }else if(sscanf(rest, "%s %s %s", virusName, date1, date2) == 3){
+        // Version that doesn't specify country
         // checking for date validity
         dateValidity(date1, date2);
         popStatusByAge(virus_map, country_map, NULL, virusName, date1, date2);
