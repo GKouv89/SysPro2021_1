@@ -92,10 +92,10 @@ int main(int argc, char *argv[]){
   char *comm_name, *citizenID, *virusName, *firstName, *lastName, *country, *vacStatus, *vacDate, *token;
   int age;
   citizenID = malloc(5*sizeof(char));
-  virusName = malloc(13*sizeof(char));
+  virusName = malloc(50*sizeof(char));
   firstName = malloc(13*sizeof(char));
   lastName = malloc(13*sizeof(char));
-  country = malloc(30*sizeof(char));
+  country = malloc(50*sizeof(char));
   vacStatus = malloc(4*sizeof(char));
   vacDate = malloc(11*sizeof(char));
   char *date1, *date2;
@@ -180,7 +180,7 @@ int main(int argc, char *argv[]){
       }else{
         printf("Bad arguments to /popStatusByAge. Try again.\n");
       }
-    }else if(strcmp(comm_name, "/popStatus") == 0){
+    }else if(strcmp(comm_name, "/populationStatus") == 0){
       if(sscanf(rest, "%s %s %s %s", country, virusName, date1, date2) == 4){
         dateValidity(date1, date2);
         popStatus(virus_map, country_map, country, virusName, date1, date2);
@@ -189,7 +189,7 @@ int main(int argc, char *argv[]){
         dateValidity(date1, date2);
         popStatus(virus_map, country_map, NULL, virusName, date1, date2);
       }else{
-        printf("Bad arguments to /popStatus. Try again.\n");
+        printf("Bad arguments to /populationStatus. Try again.\n");
       }
     }else if(strcmp(comm_name, "/exit\n") == 0){
       break;

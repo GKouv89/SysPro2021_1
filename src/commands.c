@@ -110,6 +110,10 @@ void insertCitizenRecord(hashMap *viruses, hashMap *countries, hashMap *citizens
       }
     }
   }else{
+    if(vacDate == NULL){
+      printf("ERROR IN RECORD %s %s %s %s %s %s %s\n", citizenID, firstName, lastName, country, age, virusName, vacStatus);
+      return;
+    }  
     // We are potentially about to perform a vaccination of a citizen that perhaps is registered
     // as strictly not vaccinated, so we must make sure we remove said entry, if it exists, 
     // from the virus' vaccinated for skiplist.

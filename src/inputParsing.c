@@ -40,7 +40,12 @@ void inputFileParsing(hashMap *countries, hashMap *citizens, hashMap *viruses, F
         temp = strtok(vacStatus, "\n");
       }
     }else{
-      temp = strtok(date, "\n");
+      if(date == NULL){
+        erroneousRecord = 1;
+        printf("ERROR IN RECORD %s %s %s %s %s %s %s\n", id, firstName, lastName, country_name, age, virus_name, vacStatus);        
+      }else{
+        temp = strtok(date, "\n");
+      }
     }
     if(!erroneousRecord){
       country = (Country *) find_node(countries, country_name);
