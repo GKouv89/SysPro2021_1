@@ -15,8 +15,8 @@ h39jdk2.c
 *.d
 
 # Object files
-build
-testbuild
+build/*
+testbuild/*
 *.o
 *.ko
 *.obj
