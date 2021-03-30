@@ -170,17 +170,17 @@ void incrementAgeGroup(int age, struct vaccinationsAgeGroup** vacs, int mode){
   // If the date is not in the range of the two arguement dates,
   // mode would be 0. Mode would also be 0 if it is the *not*_vaccinated_for
   // skiplist of a virus being traversed.
-  if(age <= 20){
+  if(age < 20){
     (*vacs)->overall[0]++;
     if(mode == 1){
       (*vacs)->inRange[0]++;
     }
-  }else if(age > 20 && age <= 40){
+  }else if(age >= 20 && age < 40){
     (*vacs)->overall[1]++;
     if(mode == 1){
       (*vacs)->inRange[1]++;
     }
-  }else if(age > 40 && age <= 60){
+  }else if(age >= 40 && age < 60){
     (*vacs)->overall[2]++;
     if(mode == 1){
       (*vacs)->inRange[2]++;

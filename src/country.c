@@ -31,14 +31,14 @@ void print_vaccination_ratios_byAge(Country *c, struct vaccinationsAgeGroup *vac
     printf("0-20 %d %.2lf%%\n", vacced->inRange[0], ((double)vacced->inRange[0]/(double)overallPopByGroup[0])*100);
   }
   if(overallPopByGroup[1] == 0){
-    printf("21-40 0 0%%\n");
+    printf("20-40 0 0%%\n");
   }else{
-    printf("21-40 %d %.2lf%%\n", vacced->inRange[1], ((double)vacced->inRange[1]/(double)overallPopByGroup[1])*100);
+    printf("20-40 %d %.2lf%%\n", vacced->inRange[1], ((double)vacced->inRange[1]/(double)overallPopByGroup[1])*100);
   }
   if(overallPopByGroup[2] == 0){
-    printf("41-60 0 0%%\n");
+    printf("40-60 0 0%%\n");
   }else{
-    printf("41-60 %d %.2lf%%\n", vacced->inRange[2], ((double)vacced->inRange[2]/(double)overallPopByGroup[2])*100);
+    printf("40-60 %d %.2lf%%\n", vacced->inRange[2], ((double)vacced->inRange[2]/(double)overallPopByGroup[2])*100);
   }
   if(overallPopByGroup[3] == 0){
     printf("60+ 0 0%%\n");
