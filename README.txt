@@ -8,6 +8,10 @@
   καθώς εκεί θα αποθηκευθούν τα .ο αρχεία.
   Εκτέλεση: ./vaccineMonitor -b bf_size_in_Bytes -c file_name
   Η σειρά των flags -b, -c μπορεί να αλλάξει, απλά θα πρέπει το κάθε flag να ακολουθείται από το αντίστοιχο όρισμα.
+  Εκτέλεση του bash script: ./testFile.sh viruses_file_name countries_file_name no_of_records duplicatesAllowed
+  (Ακριβώς όπως προδιαγράφεται στην εκφώνηση)
+  Στον φάκελο files περιέχονται τα αρχεία που χρησιμοποιήθηκαν για virusesFile και countriesFile κατά την διάρκεια
+  ανάπτυξης της εφαρμογής ως ορίσματα στο bash script. Φυσικά, μπορείτε να μην τα χρησιμοποιήσετε ή/και να τα διαγράψετε.
   Εκκαθάριση: make clean
   
 Επιλογές:
