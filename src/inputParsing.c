@@ -68,12 +68,6 @@ void inputFileParsing(hashMap *countries, hashMap *citizens, hashMap *viruses, F
       }
       virus = (Virus *) find_node(viruses, virus_name);
       if(virus == NULL){
-        // Since we don't know exactly how many lines the input file will have
-        // if we tell the skiplist we expect many fewer elements than those that will arrive,
-        // the list will become quite 'dense'. 
-        // However, as the citizens should be randomly distributed accross both vaccinated and non vaccinated
-        // skiplists as well as over 12 viruses (24 skiplists in total), we don't necessarily have to
-        // expect each skiplist to have too many elements; 100 is in the case of multiple records
         virus = create_virus(virus_name, 7850000000, bloomFilterSize, 16);
         insert(viruses, virus_name, virus);        
       }

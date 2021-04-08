@@ -104,9 +104,9 @@ then
   exit 1
 fi
 
-if [[ "$4" -eq 0 && "$3" -gt 10000 ]]
-then
-  set -- "${@:1:2}" "10000" "${@:4}"
+if [[ "$4" -eq 0 && "$3" -gt 10000 ]] # If there are no duplicates, there cannot be more than 10.000 records
+then # So change the value of argument no. 3 for the condition at line 137 to work.
+  set -- "${@:1:2}" "10000" "${@:4}" 
 fi
 
 mapfile -t viruses < $1
@@ -136,7 +136,7 @@ recordsProduced=0
 
 while [ "$recordsProduced" -lt "$3" ]
 do
-  # if we are reaching the end of the count of the domain of possible generatable IDs
+  # if we are reaching the end of the count of the domain of possible generatable IDs when there will be no duplicates,
   # we seek to find which ones have NOT been generated yet and choose from them.
   # So, an array of the 1000 IDs not generated yet is created and each time from 
   # now on, the id is chosen from the array. Could have been chosen again, but
@@ -156,8 +156,7 @@ do
     done
   fi
   
-  # Now, actually calculating ID if duplicatesNotAllowed or if duplicatesAllowed 
-  # and we haven't reached the point of duplicate production yet
+  # Now, actually calculating ID...
   
   if [ "$4" -eq 1 ] || [[ "$4" -eq 0 && "$recordsProduced" -lt 9000 ]]
   then
@@ -172,7 +171,7 @@ do
       id=$(( $id * 10 ))
       id=$(( $id + $digit ))
     done
-  else
+  else #... or choosing one of the remaining 1000 if no duplicates and upwards of 9000 records
     index=$RANDOM
     index=$(( $index % 1000 ))
     id=${remainingids[$index]}
@@ -180,9 +179,9 @@ do
 
   if [ "$4" -eq 0 ]
   then
-    if [[ ${ids[*]} =~ (^|[[:space:]])"$id"($|[[:space:]]) ]]
-    then
-      continue
+    if [[ ${ids[*]} =~ (^|[[:space:]])"$id"($|[[:space:]]) ]] # Looking for exact match in array
+    then # this regex patter will match only 123 if for example both 123 and 1234 are in the array
+      continue 
     fi
     record="$id "
     generateRestOfRecord
